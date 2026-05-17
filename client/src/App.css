@@ -2371,7 +2371,7 @@ body[dir="rtl"] {
   flex: 1;
   overflow: hidden;
   border-radius: 20px;
-  min-height: 200px;
+  min-height: 280px;
   position: relative;
 }
 
