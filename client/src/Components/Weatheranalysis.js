@@ -54,7 +54,7 @@ ${forecastSummary.map(f => `- ${f.time}: ${f.temp}°C, ${f.desc}, احتمال �
 
     try {
       // ✅ الـ URL الصحيح للخادم
-const response = await fetch("http://localhost:3001/api/anthropic/weather-analysis", {
+const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/anthropic/weather-analysis`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
