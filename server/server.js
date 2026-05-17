@@ -56,11 +56,6 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
-// server/index.js
-const cors = require('cors');
-
-// اسمحي لجميع الروابط بالوصول (الأسهل لمشروع التخرج)
-app.use(cors()); 
 app.use("/api/tips", tipRoutes);
 
 /* =========================================================
