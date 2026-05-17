@@ -41,6 +41,7 @@ cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key:    process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
 });
 
 /* =========================================================
@@ -204,51 +205,6 @@ app.post("/api/feedback", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* =========================================================
    👤 AUTH APIs
 ========================================================= */
@@ -291,6 +247,12 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+
+//expres method to handle http post request and authintication user logout
+app.post("/logout", async(req,res) =>{ 
+  res.status(200).send({msg: "logout successful"});
+})
 
 /* =========================================================
    👑 ADMIN LOGIN

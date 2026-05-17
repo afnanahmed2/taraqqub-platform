@@ -74,11 +74,18 @@ export const registerUser = createAsyncThunk(
 );
 
 // -------------- LOGOUT ----------------
-export const logout = createAsyncThunk("users/logout", async () => {
-  localStorage.removeItem("user");
-  localStorage.removeItem("token");
-  return "Logged out successfully";
-});
+//export const logout = createAsyncThunk("users/logout", async () => {
+  //localStorage.removeItem("user");
+  //localStorage.removeItem("token");
+  //return "Logged out successfully";
+//});
+
+//Logout
+export const logout = createAsyncThunk("users/logout", async()=>{
+  const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/logout`)
+  const msg  = response.data.msg
+  console.log(msg)
+})
 
 // -------------- UPDATE PROFILE ----------------
 // ✅ التعديل: إزالة تخزين token لأن السيرفر لا يرسله
