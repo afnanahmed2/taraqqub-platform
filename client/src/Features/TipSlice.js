@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE = `${process.env.REACT_APP_BASE_URL}/api/tips`;
+const BASE = `${process.env.REACT_APP_SERVER_URL}/api/tips`;
 
 export const fetchTips = createAsyncThunk("tips/fetch", async (governorate, { rejectWithValue }) => {
   try {

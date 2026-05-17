@@ -4,7 +4,7 @@ import axios from "axios";
 
 // ✅ إنشاء instance من Axios لإرسال التوكن تلقائيًا
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_SERVER_URL || `${process.env.REACT_APP_BASE_URL}`,
+  baseURL: process.env.REACT_APP_SERVER_URL || `${process.env.REACT_APP_SERVER_URL}`,
 });
 
 axiosInstance.interceptors.request.use((config) => {

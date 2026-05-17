@@ -108,7 +108,7 @@ function Home() {
 
   /* ✅ جلب عدد المستخدمين النشطين */
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BASE_URL}/public/users/count`)
+    axios.get(`${process.env.REACT_APP_SERVER_URL}/public/users/count`)
       .then(r => setActiveUsers(r.data.count))
       .catch(() => { });
   }, []);

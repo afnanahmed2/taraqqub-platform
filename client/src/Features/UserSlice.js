@@ -6,7 +6,7 @@ export const login = createAsyncThunk(
   "users/login",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/login`, userData);
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/login`, userData);
       const safeUser = {
         id: response.data.user._id,
         name: response.data.user.name,
@@ -29,7 +29,7 @@ export const adminLogin = createAsyncThunk(
   "users/adminLogin",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/admin/login`, userData);
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/admin/login`, userData);
       const safeUser = {
         id: response.data.user._id,
         name: response.data.user.name,
@@ -55,7 +55,7 @@ export const registerUser = createAsyncThunk(
   "users/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/registerUser`, userData);
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/registerUser`, userData);
       const safeUser = {
         id: response.data.user._id,
         name: response.data.user.name,
@@ -87,7 +87,7 @@ export const updateUserProfile = createAsyncThunk(
   async ({ userId, name, email, phone }, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}/api/user/${userId}`,
+        `${process.env.REACT_APP_SERVER_URL}/api/user/${userId}`,
         { name, email, phone }
       );
 
@@ -121,7 +121,7 @@ export const changePassword = createAsyncThunk(
   async ({ userId, currentPassword, newPassword }, { rejectWithValue }) => {
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}/api/user/${userId}/password`,
+        `${process.env.REACT_APP_SERVER_URL}/api/user/${userId}/password`,
         { currentPassword, newPassword }
       );
      
@@ -137,7 +137,7 @@ export const getUserStats = createAsyncThunk(
   "users/getUserStats",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/user/${userId}/stats`);
+      const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}/api/user/${userId}/stats`);
       return response.data.stats;
     } catch (error) {
       return rejectWithValue({ message: error.response?.data?.message || "Failed to get stats" });

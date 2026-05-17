@@ -87,7 +87,7 @@ const Profile = () => {
       // ✅ Fallback مع token
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.REACT_APP_BASE_URL}/api/user/${userId}/stats`,
+        `${process.env.REACT_APP_SERVER_URL}/api/user/${userId}/stats`,
         {
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -120,7 +120,7 @@ const Profile = () => {
       // ✅ Fallback مع token
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${process.env.REACT_APP_BASE_URL}/user/${userId}/reports?limit=5`,
+        `${process.env.REACT_APP_SERVER_URL}/user/${userId}/reports?limit=5`,
         {
           headers: {
             "Authorization": `Bearer ${token}`,

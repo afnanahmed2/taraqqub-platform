@@ -12,7 +12,7 @@ export const fetchAdminReports = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const response = await axiosInstance.get(
-        `${process.env.REACT_APP_BASE_URL}/admin/reports?limit=${limit}`,
+        `${process.env.REACT_APP_SERVER_URL}/admin/reports?limit=${limit}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -30,7 +30,7 @@ export const fetchReportStatistics = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axiosInstance.get(`${process.env.REACT_APP_BASE_URL}/admin/reports/statistics`, {
+      const response = await axiosInstance.get(`${process.env.REACT_APP_SERVER_URL}/admin/reports/statistics`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data.stats;
@@ -45,7 +45,7 @@ export const fetchPublicResolvedReports = createAsyncThunk(
   "reports/fetchPublicResolvedReports",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`${process.env.REACT_APP_BASE_URL}/public/reports/resolved`);
+      const response = await axiosInstance.get(`${process.env.REACT_APP_SERVER_URL}/public/reports/resolved`);
       return response.data.reports;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
@@ -58,7 +58,7 @@ export const fetchPublicStatistics = createAsyncThunk(
   "reports/fetchPublicStatistics",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`${process.env.REACT_APP_BASE_URL}/public/reports/statistics`);
+      const response = await axiosInstance.get(`${process.env.REACT_APP_SERVER_URL}/public/reports/statistics`);
       return response.data.stats;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message);
@@ -73,7 +73,7 @@ export const adminUpdateReportStatus = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const response = await axiosInstance.put(
-        `${process.env.REACT_APP_BASE_URL}/admin/reports/${id}/status`,
+        `${process.env.REACT_APP_SERVER_URL}/admin/reports/${id}/status`,
         { 
           status, 
           assignedAuthority: authority, 
@@ -101,7 +101,7 @@ export const createReport = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const response = await axiosInstance.post(
-        `${process.env.REACT_APP_BASE_URL}/createReport`,
+        `${process.env.REACT_APP_SERVER_URL}/createReport`,
         formData,
         {
           headers: {
@@ -127,7 +127,7 @@ export const getReports = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const response = await axiosInstance.get(
-        `${process.env.REACT_APP_BASE_URL}/reports`,
+        `${process.env.REACT_APP_SERVER_URL}/reports`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -147,7 +147,7 @@ export const deleteReport = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       await axiosInstance.delete(
-        `${process.env.REACT_APP_BASE_URL}/reports/${id}`,
+        `${process.env.REACT_APP_SERVER_URL}/reports/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` }
         }
@@ -170,7 +170,7 @@ export const updateReportStatus = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const response = await axiosInstance.put(
-        `${process.env.REACT_APP_BASE_URL}/reports/${id}`,
+        `${process.env.REACT_APP_SERVER_URL}/reports/${id}`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
