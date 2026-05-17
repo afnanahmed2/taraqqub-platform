@@ -65,7 +65,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        `${process.env.REACT_APP_BASE_URL}/api/user/${user.id}/reports`,
+        `${process.env.REACT_APP_SERVER_URL}/api/user/${user.id}/reports`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.ok) {
