@@ -1,0 +1,1918 @@
+/* ============================================ */
+/* PROFILE PAGE - يتناسب مع ستايل باقي الصفحات */
+/* ============================================ */
+
+/* ---- Page wrapper ---- */
+.profile-page {
+  min-height: 100vh;
+  background: #F6F8FB;
+  padding-bottom: 80px;
+}
+
+/* ============================================ */
+/* HERO - نفس hero-modern الموجود في الموقع    */
+/* ============================================ */
+.profile-hero {
+  height: 180px;
+  background: linear-gradient(135deg, #0F2E6D, #1E4DB7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  margin-bottom: 32px;
+  animation: fadeIn 0.8s ease;
+    width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
+}
+
+/* ============================================ */
+/* LOADING                                      */
+/* ============================================ */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+  color: #1E4DB7;
+  font-size: 16px;
+}
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  border: 4px solid rgba(30, 77, 183, 0.15);
+  border-top-color: #1E4DB7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================ */
+/* CONTAINER                                    */
+/* ============================================ */
+.profile-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ============================================ */
+/* ALERT MESSAGES                               */
+/* ============================================ */
+.alert-message {
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  animation: fadeInUp 0.4s ease;
+}
+
+.alert-message.success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert-message.error {
+  background: #fde8e8;
+  color: #c0392b;
+  border: 1px solid #f5c6cb;
+}
+
+/* ============================================ */
+/* PROFILE HEADER CARD                          */
+/* ============================================ */
+.profile-header-card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  box-shadow: 0 6px 24px rgba(30, 77, 183, 0.08);
+  flex-wrap: wrap;
+  border-top: 4px solid #1E4DB7;
+}
+
+/* ---- Avatar ---- */
+.profile-avatar {
+  flex-shrink: 0;
+}
+
+.avatar-initials {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1E4DB7, #0F2E6D);
+  color: white;
+  font-size: 32px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(30, 77, 183, 0.3);
+}
+
+/* ---- Info ---- */
+.profile-info {
+  flex: 1;
+  min-width: 160px;
+}
+
+.profile-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0F2E6D;
+  margin-bottom: 6px;
+}
+
+.profile-badge {
+  margin-bottom: 6px;
+}
+
+.profile-email {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.profile-member-since {
+  font-size: 13px;
+  color: #aaa;
+}
+
+/* ---- Role badges ---- */
+.badge-admin,
+.badge-authority,
+.badge-citizen {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.badge-admin {
+  background: #fde8e8;
+  color: #c0392b;
+}
+
+.badge-authority {
+  background: #FFF3DC;
+  color: #B96000;
+}
+
+.badge-citizen {
+  background: #EEF3FF;
+  color: #1E4DB7;
+}
+
+/* ---- Action buttons ---- */
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.btn-edit,
+.btn-cancel-edit,
+.btn-change-password {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  border: none;
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #1E4DB7, #0F2E6D);
+  color: white;
+}
+
+.btn-edit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 77, 183, 0.35);
+}
+
+.btn-cancel-edit {
+  background: #f0f0f0;
+  color: #555;
+}
+
+.btn-cancel-edit:hover {
+  background: #e0e0e0;
+}
+
+.btn-change-password {
+  background: #EEF3FF;
+  color: #1E4DB7;
+}
+
+.btn-change-password:hover {
+  background: #d8e4ff;
+  transform: translateY(-2px);
+}
+
+/* ============================================ */
+/* TWO COLUMNS                                  */
+/* ============================================ */
+.profile-two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* ============================================ */
+/* PROFILE CARD - نفس feature-card-white        */
+/* ============================================ */
+.profile-card {
+  background: white;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.profile-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(30, 77, 183, 0.1);
+}
+
+.profile-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F2E6D;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #EEF3FF;
+}
+
+/* ============================================ */
+/* PROFILE DETAILS (view mode)                  */
+/* ============================================ */
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: #888;
+  font-weight: 500;
+}
+
+.detail-value {
+  color: #2B2B2B;
+  font-weight: 500;
+  text-align: right;
+}
+
+/* ============================================ */
+/* PROFILE FORM (edit mode)                     */
+/* ============================================ */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-group input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d0d9ef;
+  font-size: 14px;
+  color: #2B2B2B;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #1E4DB7;
+  box-shadow: 0 0 0 3px rgba(30, 77, 183, 0.1);
+}
+
+.form-group input.error-input {
+  border-color: #E63946;
+}
+
+.field-error {
+  font-size: 12px;
+  color: #E63946;
+  font-weight: 500;
+}
+
+.form-actions {
+  margin-top: 4px;
+}
+
+.btn-save {
+  padding: 11px 28px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #1E4DB7, #0F2E6D);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 77, 183, 0.35);
+}
+
+/* ============================================ */
+/* STATS GRID - نفس cards-row                   */
+/* ============================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.stat-item {
+  background: #F6F8FB;
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stat-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(30, 77, 183, 0.1);
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1E4DB7;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #888;
+  font-weight: 500;
+}
+
+/* ============================================ */
+/* RECENT REPORTS                               */
+/* ============================================ */
+.no-reports {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+}
+
+.no-reports p {
+  margin-bottom: 16px;
+  font-size: 15px;
+}
+
+.btn-create-report {
+  padding: 12px 28px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #1E4DB7, #0F2E6D);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-create-report:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 77, 183, 0.35);
+}
+
+.reports-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.report-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  background: #F6F8FB;
+  border-radius: 14px;
+  gap: 16px;
+  transition: transform 0.25s, box-shadow 0.25s;
+  border-left: 4px solid #1E4DB7;
+}
+
+.report-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(30, 77, 183, 0.1);
+}
+
+.report-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.report-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F2E6D;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.report-description {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.report-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.report-date,
+.report-category {
+  font-size: 12px;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.report-category {
+  background: #EEF3FF;
+  color: #1E4DB7;
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+
+/* ---- Status badges ---- */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.status-badge.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.in-progress {
+  background: #FFF3DC;
+  color: #B96000;
+}
+
+.status-badge.pending {
+  background: #EEF3FF;
+  color: #1E4DB7;
+}
+
+.btn-view-report {
+  flex-shrink: 0;
+  padding: 9px 18px;
+  border-radius: 10px;
+  border: none;
+  background: white;
+  color: #1E4DB7;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid #d0d9ef;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-view-report:hover {
+  background: #EEF3FF;
+  transform: translateY(-2px);
+}
+
+/* ============================================ */
+/* CHANGE PASSWORD MODAL                        */
+/* ============================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 46, 109, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.35s ease;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0F2E6D;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 26px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.modal-close:hover {
+  color: #E63946;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btn-modal-cancel {
+  flex: 1;
+  padding: 11px 0;
+  border-radius: 10px;
+  border: 1.5px solid #d0d9ef;
+  background: white;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-modal-cancel:hover {
+  background: #f0f0f0;
+}
+
+.btn-modal-submit {
+  flex: 1;
+  padding: 11px 0;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #1E4DB7, #0F2E6D);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-modal-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(30, 77, 183, 0.35);
+}
+
+/* ============================================ */
+/* ANIMATIONS - نفس animations الموجودة        */
+/* ============================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================ */
+/* RESPONSIVE                                   */
+/* ============================================ */
+@media (max-width: 900px) {
+  .profile-two-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-hero {
+    height: 140px;
+  }
+
+  .profile-header-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px;
+  }
+
+  .profile-info {
+    text-align: center;
+  }
+
+  .profile-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .btn-edit,
+  .btn-cancel-edit,
+  .btn-change-password {
+    flex: 1;
+    justify-content: center;
+    min-width: 140px;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .detail-value {
+    text-align: left;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .report-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-view-report {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 0 12px;
+  }
+
+  .profile-card {
+    padding: 20px 16px;
+  }
+
+  .avatar-initials {
+    width: 64px;
+    height: 64px;
+    font-size: 26px;
+  }
+
+  .profile-name {
+    font-size: 20px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+  }
+
+  .modal-content {
+    padding: 24px 18px;
+    margin: 0 12px;
+  }
+}
+
+
+
+
+
+
+
+
+
+/* ================================================================
+   PROFILE.CSS — ADDITIONS
+   Paste these styles at the bottom of your existing profile.css
+   ================================================================ */
+
+/* ---- Spam Status Badge ---- */
+.status-badge.spam {
+  background: linear-gradient(135deg, #ff4d4d, #c0392b);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ================================================================
+   SPAM SECTION
+   ================================================================ */
+.spam-section {
+  margin-bottom: 32px;
+}
+
+.spam-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px dashed #ff4d4d44;
+}
+
+.spam-section-icon {
+  font-size: 1.4rem;
+}
+
+.spam-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #c0392b;
+  margin: 0;
+}
+
+.spam-section-count {
+  background: #ff4d4d;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Spam Cards Grid ---- */
+.spam-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ---- Individual Spam Card ---- */
+.spam-card {
+  position: relative;
+  background: linear-gradient(145deg, #fff5f5, #fff0f0);
+  border: 1.5px solid #ffb3b3;
+  border-radius: 16px;
+  padding: 20px 20px 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 12px rgba(255, 77, 77, 0.08);
+}
+
+.spam-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(255, 77, 77, 0.18);
+  border-color: #ff4d4d;
+}
+
+/* Diagonal ribbon in corner */
+.spam-card-ribbon {
+  position: absolute;
+  top: 12px;
+  right: -20px;
+  background: linear-gradient(135deg, #ff4d4d, #c0392b);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 4px 28px;
+  transform: rotate(40deg);
+  box-shadow: 0 2px 6px rgba(192, 57, 43, 0.3);
+}
+
+.spam-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.spam-cat-icon {
+  font-size: 1.6rem;
+}
+
+.spam-badge-label {
+  background: #ff4d4d22;
+  color: #c0392b;
+  border: 1px solid #ff4d4d55;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.spam-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2d2d2d;
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+.spam-card-desc {
+  font-size: 0.82rem;
+  color: #777;
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.spam-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+.spam-card-footer {
+  border-top: 1px solid #ffd0d0;
+  padding-top: 10px;
+}
+
+.spam-view-hint {
+  font-size: 0.78rem;
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* ================================================================
+   REPORT ITEM — clickable upgrade
+   ================================================================ */
+.report-item-clickable {
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.report-item-clickable:hover {
+  background: #f8faff;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.1);
+}
+
+.report-item-left {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   REPORT DETAIL MODAL
+   ================================================================ */
+.report-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeInOverlay 0.2s ease;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.report-modal {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: slideUpModal 0.25s ease;
+}
+
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.report-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #f0f0f0;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  transition: background 0.2s;
+  z-index: 2;
+}
+
+.report-modal-close:hover {
+  background: #e0e0e0;
+}
+
+/* Status banners */
+.report-modal-banner {
+  padding: 14px 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 20px 20px 0 0;
+  letter-spacing: 0.3px;
+}
+
+.banner-spam {
+  background: linear-gradient(135deg, #ff4d4d, #c0392b);
+  color: white;
+}
+
+.banner-resolved {
+  background: linear-gradient(135deg, #27ae60, #1e8449);
+  color: white;
+}
+
+.banner-inprogress {
+  background: linear-gradient(135deg, #2980b9, #1a5f7a);
+  color: white;
+}
+
+.banner-pending {
+  background: linear-gradient(135deg, #f39c12, #d68910);
+  color: white;
+}
+
+/* Title row */
+.report-modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 4px;
+}
+
+.report-modal-cat-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.report-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Info grid */
+.report-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px 24px;
+}
+
+.report-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.report-modal-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #999;
+}
+
+.report-modal-value {
+  font-size: 0.88rem;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Description & Recommendation boxes */
+.report-modal-desc,
+.report-modal-rec {
+  margin: 0 24px 16px;
+  background: #f8f9fb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report-modal-rec {
+  background: #fffbf0;
+  border-left: 3px solid #f39c12;
+}
+
+.report-modal-desc p,
+.report-modal-rec p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* Media */
+.report-modal-media {
+  margin: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.report-modal-img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.report-modal-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+/* ---- Spam Stat Item ---- */
+.stat-item-spam {
+  background: linear-gradient(135deg, #fff0f0, #ffe0e0);
+  border: 1.5px solid #ffb3b3;
+  border-radius: 12px;
+}
+
+.stat-value-spam {
+  color: #c0392b !important;
+}
+
+/* ================================================================
+   REPORT MODAL — rm- prefix (matches screenshot style)
+   ================================================================ */
+.rm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: rmFadeIn 0.2s ease;
+}
+@keyframes rmFadeIn { from { opacity:0 } to { opacity:1 } }
+
+.rm-box {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  overflow: hidden;
+  animation: rmSlideUp 0.25s ease;
+}
+@keyframes rmSlideUp {
+  from { opacity:0; transform:translateY(24px) }
+  to   { opacity:1; transform:translateY(0) }
+}
+
+.rm-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 20px;
+  position: relative;
+  flex-shrink: 0;
+}
+.rm-banner--resolved   { background: #e8f8ee; }
+.rm-banner--inprogress { background: #e8f0fe; }
+.rm-banner--pending    { background: #fff8e1; }
+.rm-banner--spam       { background: #fdecea; }
+
+.rm-banner-text {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.rm-banner--resolved   .rm-banner-text { color: #1e7e44; }
+.rm-banner--inprogress .rm-banner-text { color: #1a56c4; }
+.rm-banner--pending    .rm-banner-text { color: #b45309; }
+.rm-banner--spam       .rm-banner-text { color: #b91c1c; }
+
+.rm-close {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  transition: background 0.15s;
+}
+.rm-close:hover { background: #f0f0f0; }
+
+.rm-body {
+  padding: 24px 28px 28px;
+  overflow-y: auto;
+}
+
+.rm-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.rm-cat-icon { font-size: 1.8rem; flex-shrink: 0; }
+.rm-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.rm-divider {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 0 0 20px;
+}
+
+.rm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 16px;
+  margin-bottom: 20px;
+}
+.rm-field { display: flex; flex-direction: column; gap: 4px; }
+.rm-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #4f8ef7;
+  text-transform: uppercase;
+}
+.rm-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.rm-desc-box {
+  background: #f8f9fb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rm-rec-box {
+  background: #f0fdf4;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rm-box-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #4f8ef7;
+  text-transform: uppercase;
+}
+.rm-rec-box .rm-box-label { color: #15803d; }
+
+.rm-box-text {
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.rm-media {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.rm-img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+.rm-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+  .report-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .spam-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+
+  /* ================================================================
+   PROFILE.CSS — ADDITIONS
+   Paste these styles at the bottom of your existing profile.css
+   ================================================================ */
+
+/* ---- Spam Status Badge ---- */
+.status-badge.spam {
+  background: linear-gradient(135deg, #ff4d4d, #c0392b);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ================================================================
+   SPAM SECTION
+   ================================================================ */
+.spam-section {
+  margin-bottom: 32px;
+}
+
+.spam-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px dashed #ff4d4d44;
+}
+
+.spam-section-icon {
+  font-size: 1.4rem;
+}
+
+.spam-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #c0392b;
+  margin: 0;
+}
+
+.spam-section-count {
+  background: #ff4d4d;
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---- Spam Cards Grid ---- */
+.spam-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ---- Individual Spam Card ---- */
+.spam-card {
+  position: relative;
+  background: linear-gradient(145deg, #fff5f5, #fff0f0);
+  border: 1.5px solid #ffb3b3;
+  border-radius: 16px;
+  padding: 20px 20px 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 12px rgba(255, 77, 77, 0.08);
+}
+
+.spam-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(255, 77, 77, 0.18);
+  border-color: #ff4d4d;
+}
+
+/* Diagonal ribbon in corner */
+.spam-card-ribbon {
+  position: absolute;
+  top: 12px;
+  right: -20px;
+  background: linear-gradient(135deg, #ff4d4d, #c0392b);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 4px 28px;
+  transform: rotate(40deg);
+  box-shadow: 0 2px 6px rgba(192, 57, 43, 0.3);
+}
+
+.spam-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.spam-cat-icon {
+  font-size: 1.6rem;
+}
+
+.spam-badge-label {
+  background: #ff4d4d22;
+  color: #c0392b;
+  border: 1px solid #ff4d4d55;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.spam-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #2d2d2d;
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+.spam-card-desc {
+  font-size: 0.82rem;
+  color: #777;
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.spam-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: #999;
+  margin-bottom: 12px;
+}
+
+.spam-card-footer {
+  border-top: 1px solid #ffd0d0;
+  padding-top: 10px;
+}
+
+.spam-view-hint {
+  font-size: 0.78rem;
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* ================================================================
+   REPORT ITEM — clickable upgrade
+   ================================================================ */
+.report-item-clickable {
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.report-item-clickable:hover {
+  background: #f8faff;
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.1);
+}
+
+.report-item-left {
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+/* ================================================================
+   REPORT DETAIL MODAL
+   ================================================================ */
+.report-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeInOverlay 0.2s ease;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.report-modal {
+  background: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: slideUpModal 0.25s ease;
+}
+
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.report-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: #f0f0f0;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  transition: background 0.2s;
+  z-index: 2;
+}
+
+.report-modal-close:hover {
+  background: #e0e0e0;
+}
+
+/* Status banners */
+.report-modal-banner {
+  padding: 14px 20px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 20px 20px 0 0;
+  letter-spacing: 0.3px;
+}
+
+.banner-spam {
+  background: linear-gradient(135deg, #ff4d4d, #c0392b);
+  color: white;
+}
+
+.banner-resolved {
+  background: linear-gradient(135deg, #27ae60, #1e8449);
+  color: white;
+}
+
+.banner-inprogress {
+  background: linear-gradient(135deg, #2980b9, #1a5f7a);
+  color: white;
+}
+
+.banner-pending {
+  background: linear-gradient(135deg, #f39c12, #d68910);
+  color: white;
+}
+
+/* Title row */
+.report-modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 4px;
+}
+
+.report-modal-cat-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.report-modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* Info grid */
+.report-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px 24px;
+}
+
+.report-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.report-modal-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #999;
+}
+
+.report-modal-value {
+  font-size: 0.88rem;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Description & Recommendation boxes */
+.report-modal-desc,
+.report-modal-rec {
+  margin: 0 24px 16px;
+  background: #f8f9fb;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.report-modal-rec {
+  background: #fffbf0;
+  border-left: 3px solid #f39c12;
+}
+
+.report-modal-desc p,
+.report-modal-rec p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #444;
+  line-height: 1.6;
+}
+
+/* Media */
+.report-modal-media {
+  margin: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.report-modal-img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+}
+
+.report-modal-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+}
+
+/* ---- Spam Stat Item ---- */
+.stat-item-spam {
+  background: linear-gradient(135deg, #fff0f0, #ffe0e0);
+  border: 1.5px solid #ffb3b3;
+  border-radius: 12px;
+}
+
+.stat-value-spam {
+  color: #c0392b !important;
+}
+
+/* ================================================================
+   REPORT MODAL — rm- prefix (matches screenshot style)
+   ================================================================ */
+.rm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: rmFadeIn 0.2s ease;
+}
+@keyframes rmFadeIn { from { opacity:0 } to { opacity:1 } }
+
+.rm-box {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  overflow: hidden;
+  animation: rmSlideUp 0.25s ease;
+}
+@keyframes rmSlideUp {
+  from { opacity:0; transform:translateY(24px) }
+  to   { opacity:1; transform:translateY(0) }
+}
+
+.rm-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 20px;
+  position: relative;
+  flex-shrink: 0;
+}
+.rm-banner--resolved   { background: #e8f8ee; }
+.rm-banner--inprogress { background: #e8f0fe; }
+.rm-banner--pending    { background: #fff8e1; }
+.rm-banner--spam       { background: #fdecea; }
+
+.rm-banner-text {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.rm-banner--resolved   .rm-banner-text { color: #1e7e44; }
+.rm-banner--inprogress .rm-banner-text { color: #1a56c4; }
+.rm-banner--pending    .rm-banner-text { color: #b45309; }
+.rm-banner--spam       .rm-banner-text { color: #b91c1c; }
+
+.rm-close {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  transition: background 0.15s;
+}
+.rm-close:hover { background: #f0f0f0; }
+
+.rm-body {
+  padding: 24px 28px 28px;
+  overflow-y: auto;
+}
+
+.rm-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.rm-cat-icon { font-size: 1.8rem; flex-shrink: 0; }
+.rm-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.rm-divider {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 0 0 20px;
+}
+
+.rm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 16px;
+  margin-bottom: 20px;
+}
+.rm-field { display: flex; flex-direction: column; gap: 4px; }
+.rm-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #4f8ef7;
+  text-transform: uppercase;
+}
+.rm-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.rm-desc-box {
+  background: #f8f9fb;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rm-rec-box {
+  background: #f0fdf4;
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rm-box-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #4f8ef7;
+  text-transform: uppercase;
+}
+.rm-rec-box .rm-box-label { color: #15803d; }
+
+.rm-box-text {
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.rm-media {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.rm-img-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+}
+.rm-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+/* ---- Authority Badge in Modal ---- */
+.rm-authority-badge {
+  display: inline-block;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* ---- Report List Thumbnail ---- */
+.report-item-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e5e7eb;
+}
+
+.report-item-thumb--empty {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  border: 1px solid #e5e7eb;
+}
+
+  .report-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .spam-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+
+
+
+  

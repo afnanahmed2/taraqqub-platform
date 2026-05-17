@@ -1,0 +1,652 @@
+/* ============================================ */
+/* ADMIN DASHBOARD - متوافق مع ستايل المشروع   */
+/* ============================================ */
+
+.admin-dashboard-container {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #F6F8FB;
+  min-height: 100vh;
+  color: #2B2B2B;
+}
+
+/* ============================================ */
+/* HERO HEADER - نفس ستايل hero-modern          */
+/* ============================================ */
+.admin-dashboard-header {
+  background: linear-gradient(135deg, #0F2E6D, #1E4DB7);
+  padding: 50px 20px 40px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0;
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.admin-dashboard-header h1 {
+  font-size: 36px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  letter-spacing: 1px;
+}
+
+.admin-dashboard-header p {
+  font-size: 15px;
+  opacity: 0.8;
+  margin: 0;
+}
+
+/* ============================================ */
+/* STATS SECTION - نفس ستايل cards-row          */
+/* ============================================ */
+.admin-dashboard-stats {
+  display: grid;
+  justify-content: center;
+  align-items: stretch;
+  gap: 16px;
+  grid-template-columns: repeat(6, 1fr); /* كان 4 أو 5، غيره لـ 6 */
+  flex-wrap: wrap;
+  padding: 40px 20px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 28px 30px;
+  text-align: center;
+  flex: 1;
+  min-width: 180px;
+  max-width: 240px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-top: 4px solid #1E4DB7;
+  animation: cardFade 0.6s ease forwards;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(30, 77, 183, 0.15);
+}
+
+.stat-card:nth-child(1) { border-top-color: #1E4DB7; animation-delay: 0.05s; }
+.stat-card:nth-child(2) { border-top-color: #FF9F1C; animation-delay: 0.1s; }
+.stat-card:nth-child(3) { border-top-color: #48CAE4; animation-delay: 0.15s; }
+.stat-card:nth-child(4) { border-top-color: #28a745; animation-delay: 0.2s; }
+
+/* Spam Card - Red border only, white inside */
+.stat-card:nth-child(5) { 
+  border-top-color: #dc3545; 
+  animation-delay: 0.25s;
+}
+
+.stat-card h3 {
+  color: #0F2E6D;
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-card p {
+  font-size: 40px;
+  font-weight: 800;
+  color: #1E4DB7;
+  margin: 0;
+  line-height: 1;
+}
+
+.stat-card:nth-child(2) p { color: #FF9F1C; }
+.stat-card:nth-child(3) p { color: #0096C7; }
+.stat-card:nth-child(4) p { color: #28a745; }
+.stat-card:nth-child(5) p { color: #dc3545; }
+
+.stat-card:nth-child(5) h3 { color: #dc3545; }
+
+/* Spam Card hover effect */
+.stat-card:nth-child(5):hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(220, 53, 69, 0.15);
+}
+
+/* Push the last card (Spam) to the far right */
+@media (min-width: 769px) {
+  .admin-dashboard-stats {
+    justify-content: flex-start;
+  }
+  
+  .stat-card:last-child {
+    margin-left: auto;
+  }
+}
+
+/* ============================================ */
+/* MAIN CONTENT LAYOUT                          */
+/* ============================================ */
+/* غيّره إلى هذا */
+.admin-dashboard-content {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto 60px;
+}
+
+.reports-table-section {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+  padding: 28px 24px;
+  flex: 2.5;          /* أكبر — الجدول */
+  min-width: 500px;
+  animation: fadeUp 0.8s ease forwards;
+}
+
+.map-section {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+  padding: 28px 24px;
+  flex: 1;            /* أصغر — الخريطة */
+  min-width: 260px;
+  max-width: 350px;   /* حد أقصى للخريطة */
+  animation: fadeUp 0.8s ease forwards;
+}
+.reports-table-section h2,
+.map-section h2 {
+  color: #0F2E6D;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 20px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #EEF3FF;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ============================================ */
+/* FILTER CONTROLS                              */
+/* ============================================ */
+.filter-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-controls select {
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d0d9ef;
+  background: #F6F8FB;
+  font-size: 13px;
+  color: #2B2B2B;
+  cursor: pointer;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+  min-width: 140px;
+}
+
+.filter-controls select:focus {
+  border-color: #1E4DB7;
+  box-shadow: 0 0 0 3px rgba(30, 77, 183, 0.1);
+}
+
+/* ============================================ */
+/* REPORTS TABLE                                */
+/* ============================================ */
+.reports-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.reports-table thead tr {
+  background: linear-gradient(135deg, #0F2E6D, #1E4DB7);
+}
+
+.reports-table th {
+  padding: 12px 14px;
+  text-align: left;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.reports-table th:first-child { border-radius: 10px 0 0 10px; }
+.reports-table th:last-child  { border-radius: 0 10px 10px 0; }
+
+.reports-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid #EEF3FF;
+  vertical-align: middle;
+  color: #2B2B2B;
+}
+
+.reports-table tr:last-child td { border-bottom: none; }
+
+.reports-table tbody tr {
+  transition: background 0.2s;
+}
+
+.reports-table tbody tr:hover {
+  background: #F7F9FF;
+}
+
+/* ============================================ */
+/* STATUS BADGES                                */
+/* ============================================ */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.status-badge.pending     { background: #FFF3DC; color: #B96000; }
+.status-badge.in-progress { background: #E0F5FB; color: #0096C7; }
+.status-badge.resolved    { background: #d4edda; color: #155724; }
+.status-badge.spam        { background: #fde8e8; color: #c0392b; }
+
+/* ============================================ */
+/* PRIORITY COLORS                              */
+/* ============================================ */
+.priority-low    { color: #155724; font-weight: 700; }
+.priority-medium { color: #B96000; font-weight: 700; }
+.priority-high   { color: #c0392b; font-weight: 700; }
+
+/* ============================================ */
+/* TABLE BUTTONS                                */
+/* ============================================ */
+.reports-table .view-btn {
+  background: linear-gradient(135deg, #1E4DB7, #0F2E6D);
+  color: white;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-right: 6px;
+}
+
+.reports-table .view-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 77, 183, 0.3);
+}
+
+.reports-table .status-select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1.5px solid #d0d9ef;
+  background: #F6F8FB;
+  font-size: 12px;
+  color: #2B2B2B;
+  cursor: pointer;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.reports-table .status-select:focus {
+  border-color: #1E4DB7;
+}
+
+.cancel-spam-btn {
+  background: #fde8e8;
+  color: #c0392b;
+  border: none;
+  padding: 6px 10px;
+  margin-left: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.cancel-spam-btn:hover {
+  background: #f5c6cb;
+  transform: translateY(-1px);
+}
+
+/* ============================================ */
+/* MODAL - نفس ستايل النظام                    */
+/* ============================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 46, 109, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  padding: 36px 32px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 760px;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 50px rgba(15, 46, 109, 0.25);
+  animation: fadeUp 0.35s ease;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  background: #EEF3FF;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  color: #1E4DB7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.2s;
+  line-height: 1;
+}
+
+.modal-close-button:hover {
+  background: #fde8e8;
+  color: #c0392b;
+  transform: scale(1.1);
+}
+
+.modal-content h2 {
+  color: #0F2E6D;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #EEF3FF;
+  padding-right: 40px;
+}
+
+.modal-content p {
+  margin: 0 0 10px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: #555;
+}
+
+.modal-content p strong {
+  color: #0F2E6D;
+  font-weight: 700;
+}
+
+.modal-content h3 {
+  color: #1E4DB7;
+  font-size: 17px;
+  font-weight: 700;
+  margin: 20px 0 12px;
+}
+
+.modal-media-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.modal-media-gallery img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #EEF3FF;
+  transition: transform 0.2s;
+}
+
+.modal-media-gallery img:hover {
+  transform: scale(1.03);
+}
+
+/* ============================================ */
+/* LOADING / ERROR                              */
+/* ============================================ */
+.admin-dashboard-loading {
+  text-align: center;
+  padding: 80px 20px;
+  font-size: 18px;
+  color: #1E4DB7;
+  font-weight: 600;
+}
+
+.admin-dashboard-error {
+  text-align: center;
+  padding: 80px 20px;
+  font-size: 18px;
+  color: #E63946;
+  font-weight: 600;
+}
+
+/* ============================================ */
+/* CHARTS SECTION (optional)                    */
+/* ============================================ */
+.dashboard-charts-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+}
+
+.charts-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+}
+
+.pie-chart,
+.bar-chart {
+  flex: 1 1 300px;
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.07);
+}
+
+/* ============================================ */
+/* ANIMATIONS - نفس ستايل المشروع              */
+/* ============================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cardFade {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================================ */
+/* RESPONSIVE                                   */
+/* ============================================ */
+@media (max-width: 1024px) {
+  .admin-dashboard-content {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .reports-table-section,
+  .map-section {
+    min-width: unset;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard-header h1 {
+    font-size: 26px;
+  }
+  @media (max-width: 600px) {
+  .admin-dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+  .admin-dashboard-stats {
+    gap: 16px;
+    padding: 30px 16px 16px;
+  }
+
+  .stat-card {
+    min-width: 140px;
+  }
+  
+  /* Remove margin-left on mobile */
+  .stat-card:last-child {
+    margin-left: 0;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+  }
+
+  .filter-controls select {
+    width: 100%;
+  }
+
+  .reports-table th,
+  .reports-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .modal-content {
+    padding: 24px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-dashboard-header h1 { font-size: 22px; }
+  .stat-card p { font-size: 32px; }
+  .admin-dashboard-content { padding: 12px; gap: 16px; }
+}
+
+
+.spam-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.spam-badge.is-spam {
+  background: #ffe0e0;
+  color: #c0392b;
+  border: 1px solid #e74c3c;
+}
+
+.spam-badge.not-spam {
+  background: #e0f7ea;
+  color: #1a7a4a;
+  border: 1px solid #2ecc71;
+}
+
+
+
+
+
+/* زر Dashboard Charts */
+.charts-nav-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 10px 24px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.charts-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+/* AdminDashboard.css - أضف هذه الكلاسات */
+.priority-high {
+  color: #dc3545;
+  font-weight: bold;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.priority-medium {
+  color: #ffc107;
+  font-weight: bold;
+  background: rgba(255, 193, 7, 0.1);
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.priority-low {
+  color: #28a745;
+  font-weight: bold;
+  background: rgba(40, 167, 69, 0.1);
+  padding: 4px 8px;
+  border-radius: 20px;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background: #ffc10720;
+  color: #ffc107;
+}
+
+.status-badge.in-progress {
+  background: #17a2b820;
+  color: #17a2b8;
+}
+
+.status-badge.resolved {
+  background: #28a74520;
+  color: #28a745;
+}
+
+.status-badge.spam {
+  background: #dc354520;
+  color: #dc3545;
+}
+
+.status-badge.rejected {
+  background: #6c757d20;
+  color: #6c757d;
+}
