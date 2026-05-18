@@ -4,17 +4,37 @@ import axios from "axios";
 // ============================================================
 // 🆕 دالة للحصول على الـ API URL ديناميكياً (جديد)
 // ============================================================
+//const getApiUrl = () => {
+  //if (process.env.REACT_APP_API_URL) {
+    //return process.env.REACT_APP_API_URL;}
+  //const currentHost = window.location.hostname;
+  //const currentPort = "3001";
+  //return `http://${currentHost}:${currentPort}`;};
+
+//const BASE = getApiUrl();
+
+// ============================================================
+// 🆕 دالة للحصول على الـ API URL بشكل صحيح (تصحيح)
+// ============================================================
 const getApiUrl = () => {
+  // 1. إذا كنتِ قد وضعتِ الرابط في إعدادات البيئة (يفضل ذلك)
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL;
   }
-  const currentHost = window.location.hostname;
-  const currentPort = "3001";
-  return `http://${currentHost}:${currentPort}`;
+
+  // 2. إذا كنتِ ترفعين السيرفر والواجهة على نفس الخدمة أو تريدين رابطاً ثابتاً
+  // استبدلي الرابط أدناه برابط السيرفر (Backend) الخاص بكِ على Render
+  const productionServerUrl = "https://taraqqub-platform.onrender.com"; 
+
+  // 3. التحقق إذا كان التشغيل محلياً (Localhost) أو على الإنترنت (Production)
+  if (window.location.hostname === "localhost") {
+    return "http://localhost:3001"; // في جهازك الشخصي
+  } else {
+    return productionServerUrl; // عند الرفع على Render
+  }
 };
 
 const BASE = getApiUrl();
-
 // ============================================================
 // إرسال فيدباك مع البيانات الإضافية
 // ============================================================
