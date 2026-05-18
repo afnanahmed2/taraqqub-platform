@@ -1658,11 +1658,11 @@ app.use((req, res) => {
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, "./frontend/build"))); 
 
+
 // 2. أي طلب لا يطابق الروابط أعلاه، يتم توجيهه لصفحة index.html
-app.get("*", (req, res) => {
+app.get("(.*)", (req, res) => {
   res.sendFile(path.join(__dirname, "./frontend/build", "index.html"));
 });
-
 /* =========================================================
    🚀 START SERVER
 ========================================================= */
