@@ -59,7 +59,7 @@ function App() {
               element={localStorage.getItem('role') === 'admin'? <TipsMangment />: <Navigate to="/login" />
                  }/>
             <Route path="/CitizenReort" element={<CitizenReort />} />
-            <Route path="/feedback"           element={<Feedback />} />
+            <Route path="/feedback"           element={<ProtectedRoute><Feedback /></ProtectedRoute>}  />
 <Route path="/feedback-submitted" element={<FeedbackSubmitted />} />
 <Route path="/admin/feedback" element={localStorage.getItem('role') === 'admin'? <AdminFeedback />: <Navigate to="/login" />}/>
 
