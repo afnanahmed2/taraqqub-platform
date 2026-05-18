@@ -4,7 +4,6 @@
 
 import express from "express";
 import mongoose from "mongoose";
-import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
@@ -1646,23 +1645,6 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: `Route ${req.method} ${req.url} not found` });
 });
 
-/* =========================================================
-   🚀 START SERVER
-========================================================= */
-/* =========================================================
-   ✅ حل مشكلة التحديث (Refresh) لـ React Router
-========================================================= */
-
-// 1. تحديد مجلد ملفات الـ React الجاهزة (بعد الـ build)
-// ملاحظة: تأكدي أن مجلد الـ frontend موجود بجانب مجلد الـ backend
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, "./frontend/build"))); 
-
-
-// 2. أي طلب لا يطابق الروابط أعلاه، يتم توجيهه لصفحة index.html
-app.get("(.*)", (req, res) => {
-  res.sendFile(path.join(__dirname, "./frontend/build", "index.html"));
-});
 /* =========================================================
    🚀 START SERVER
 ========================================================= */
