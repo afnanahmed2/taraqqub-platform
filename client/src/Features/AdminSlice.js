@@ -29,7 +29,6 @@ export const adminLogin = createAsyncThunk(
       
       // ✅ حفظ التوكن وبيانات المستخدم في localStorage
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("userRole", "admin");
       localStorage.setItem("user", JSON.stringify(res.data.user)); // ✅ حفظ user كامل
         
       return {
@@ -113,9 +112,7 @@ const adminSlice = createSlice({
       state.error = null;
       state.statistics = null;
       state.reports = [];
-      localStorage.removeItem("token");
-      localStorage.removeItem("userRole");
-      localStorage.removeItem("user");
+      localStorage.clear();
     },
     setFilters: (state, action) => {
       state.filters = { ...state.filters, ...action.payload };

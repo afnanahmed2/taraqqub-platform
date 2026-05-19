@@ -15,26 +15,14 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const { reports, status, error, statistics } = useSelector((state) => state.reports);
 
-  // ============================================================
-  // 🔐 AUTHENTICATION CHECK - جلب كل البلاغات
-  // ============================================================
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const userRole = localStorage.getItem("role");
-   
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-   
-    if (userRole !== "admin") {
-      navigate("/unauthorized");
-      return;
-    }
-   
-    dispatch(fetchAdminReports({ limit: 100000 }));
-    dispatch(fetchReportStatistics());
-  }, [dispatch, navigate]);
+// ============================================================
+// 🔐 AUTHENTICATION & DATA FETCHING - جلب كل البلاغات بأمان
+// ============================================================
+useEffect(() => {
+  // الحارس في App.js أمن الدخول مسبقاً، هنا نقوم بجلب البيانات مباشرة فور تحميل الصفحة
+  dispatch(fetchAdminReports({ limit: 100000 }));
+  dispatch(fetchReportStatistics());
+}, [dispatch]);
 
   // ============================================================
   // 📌 STATE MANAGEMENT
@@ -656,7 +644,7 @@ const AdminDashboard = () => {
                               authority: e.target.value
                             }))}
                           >
-                            <option value="Ministry of Transport">Ministry of Transport</option>
+                            <option value="Ministry of Transport">Ministry of Transport (MTCIT)</option>
                             <option value="Municipality">Municipality</option>
                             <option value="Royal Oman Police (ROP)">Royal Oman Police (ROP)</option>
                             <option value="Ministry of Awqaf">Ministry of Awqaf</option>

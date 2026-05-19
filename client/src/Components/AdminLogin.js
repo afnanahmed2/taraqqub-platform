@@ -22,32 +22,36 @@ function AdminLogin() {
     // 1. استدعاء الدالة
     const result = await dispatch(adminLogin({ email, password }));
 
+    console.log("Redux Login Result:", result);
     // 2. التحقق من النجاح (fulfilled)
     if (result.meta.requestStatus === "fulfilled") {
+      const data = result.payload; // البيانات القادمة من السيرفر (التوكن وبيانات الأدمن)
       //  التعديل الجوهري: استخدام result.payload بدلاً من result.data
       //const data = result.payload; 
       
-      if (result.payload?.token) {
-        //localStorage.setItem("token", data.token);
-        localStorage.setItem("userRole", 'admin');
-        localStorage.setItem("token", result.payload.token);
-        
-        // التوجه لصفحة الداشبورد (تأكد من مطابقة حالة الأحرف في المسار)
-        navigate("/AdminDashboard"); 
+// التغيير هنا: نتأكد أن السيرفر أعاد التوكن وبيانات المستخدم الحقيقية
+        if (data && (data.token || data.user)) {
+          
+          // ✅ الحفظ الصحيح والمتناسق مع كود الهيدر ليتعرف عليه فوراً
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user)); // حفظ بيانات الأدمن كاملة
+          
+          // التوجه لصفحة الداشبورد
+          navigate("/AdminDashboard"); 
+        } else {
+          setError("Login failed: Token or User data missing");
+        }
       } else {
-        setError("Login failed: Token not received");
+        // إظهار رسالة الخطأ القادمة من السيرفر (مثل 403 أو 401)
+        setError(result.payload?.message || "Login failed: Incorrect email or password");
       }
-    } else {
-      // إظهار رسالة الخطأ القادمة من السيرفر
-      setError(result.payload?.message || "Login failed: Incorrect email or password");
+    } catch (err) {
+      console.error("Admin Login Error:", err);
+      setError("An unexpected error occurred during login");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Admin Login Error:", err);
-    setError("An unexpected error occurred during login");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const goToUserLogin = () => navigate("/login");
 

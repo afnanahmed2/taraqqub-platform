@@ -28,13 +28,31 @@ const DashboardCharts = () => {
   // التحقق من صلاحيات المدير وجلب البيانات
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const userRole = localStorage.getItem("role");
+    let userRole = localStorage.getItem("role") || "";
 
-    if (!token || userRole !== "admin") {
-      navigate("/adminDashboard");
+    // إذا لم يجد role مباشرة، يبحث داخل كائن user
+    if (!userRole) {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          userRole = parsedUser.role || parsedUser.userType || "";
+        } catch (e) {
+          console.error("Error parsing user object", e);
+        }
+      }
+    }
+
+    // طباعة الفحص في الـ Console
+    console.log("🔒 Auth Debugger -> Token:", token ? "Exists" : "Missing", "| Role:", userRole);
+
+    // شرط الحماية المرن
+    if (!token || userRole.trim().toLowerCase() !== "admin") {
+      navigate("/login");
       return;
     }
 
+    // جلب البيانات
     if (reports.length === 0) {
       dispatch(fetchAdminReports());
     }
@@ -46,7 +64,6 @@ const DashboardCharts = () => {
   // حساب إحصائيات الفئات والمحافظات والبيانات الشهرية
   useEffect(() => {
     if (reports.length > 0) {
-      
       // 1. حساب إحصائيات الفئات (Category Distribution)
       const categoryCount = {};
       reports.forEach(report => {
@@ -75,7 +92,6 @@ const DashboardCharts = () => {
 
       // 3. حساب البيانات الشهرية الحقيقية (Monthly Trends)
       const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      
       const monthlyReports = {};
       const monthlyResolved = {};
       
@@ -181,7 +197,6 @@ const DashboardCharts = () => {
 
   return (
     <div className="charts-page">
-      {/* Hero Section مع زر العودة */}
       <div className="charts-hero">
         <div className="charts-hero-content">
           <button className="charts-back-btn" onClick={() => navigate('/adminDashboard')}>
@@ -193,9 +208,7 @@ const DashboardCharts = () => {
       </div>
 
       <div className="charts-container">
-        {/* Key Metrics Cards */}
         <div className="metrics-grid">
-          {/* البطاقة 1: إجمالي البلاغات */}
           <div className="metric-card">
             <div className="metric-icon blue">
               <Activity size={24} />
@@ -212,7 +225,6 @@ const DashboardCharts = () => {
             </div>
           </div>
 
-          {/* البطاقة 2: أكثر المشاكل شيوعاً */}
           <div className="metric-card">
             <div className="metric-icon orange">
               <AlertTriangle size={24} />
@@ -228,7 +240,6 @@ const DashboardCharts = () => {
             </div>
           </div>
 
-          {/* البطاقة 3: نسبة الإنجاز */}
           <div className="metric-card">
             <div className="metric-icon green">
               <CheckCircle size={24} />
@@ -247,7 +258,6 @@ const DashboardCharts = () => {
             </div>
           </div>
 
-          {/* البطاقة 4: عدد المحافظات التي بها بلاغات */}
           <div className="metric-card">
             <div className="metric-icon purple">
               <MapPin size={24} />
@@ -260,14 +270,11 @@ const DashboardCharts = () => {
           </div>
         </div>
 
-        {/* Charts Row 1 - مخططين مختلفين (Pie Charts) */}
         <div className="charts-row">
-          
-          {/* المخطط 1: توزيع البلاغات حسب الحالة (Status) */}
           <div className="chart-card">
             <div className="chart-header">
               <h3>📊 Report Status Distribution</h3>
-              <p>Current state of all submitted reports (Pending, In Progress, Resolved...)</p>
+              <p>Current state of all submitted reports</p>
             </div>
             <div className="chart-body">
               <ResponsiveContainer width="100%" height={300}>
@@ -293,7 +300,6 @@ const DashboardCharts = () => {
             </div>
           </div>
 
-          {/* المخطط 2: توزيع البلاغات حسب المحافظات */}
           <div className="chart-card">
             <div className="chart-header">
               <h3>📍 Reports by Governorate</h3>
@@ -329,7 +335,6 @@ const DashboardCharts = () => {
           </div>
         </div>
 
-        {/* Charts Row 2 - Area Chart (Monthly Trends) */}
         <div className="charts-row">
           <div className="chart-card full-width">
             <div className="chart-header">
@@ -375,18 +380,17 @@ const DashboardCharts = () => {
                 </ResponsiveContainer>
               ) : (
                 <div className="no-data" style={{ textAlign: 'center', padding: '60px' }}>
-                  📊 No report data available yet. Start submitting reports to see trends!
+                  📊 No report data available yet.
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Top Categories Bar Chart */}
         <div className="chart-card full-width" style={{ marginBottom: '40px' }}>
           <div className="chart-header">
             <h3>🏆 Top Problem Categories (By Count)</h3>
-            <p>Most frequently reported infrastructure issues - ranked by number of reports</p>
+            <p>Most frequently reported infrastructure issues</p>
           </div>
           <div className="chart-body">
             {categoryStats.length > 0 ? (
@@ -412,9 +416,6 @@ const DashboardCharts = () => {
             )}
           </div>
         </div>
-
-        
-        
       </div>
     </div>
   );

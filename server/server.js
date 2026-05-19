@@ -52,11 +52,18 @@ const app = express();
 
 app.use(express.json({ limit: "100mb" }));
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
+
+// التعديل هنا: جعل الـ origin يقبل الرابط المحلي ورابط الـ Render معاً
 app.use(cors({
-  origin: "*",
+  origin: [
+    'http://localhost:3000', 
+    'https://taraqqub-platform.onrender.com'
+  ], 
+  credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
 app.use("/api/tips", tipRoutes);
 
 /* =========================================================
@@ -231,10 +238,15 @@ app.post("/login", async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    // 🔴 حماية: إذا حاول الأدمن الدخول من هنا، السيرفر يرفضه ليوجهه المتصفح لصفحة الأدمن
+    if (user.role === "admin") {
+      return res.status(403).json({ message: "Please use the Admin login page." });
+    }
+
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ message: "Wrong password" });
 
-    const role  = email.endsWith("@taraqqub.om") ? "authority" : "citizen";
+    const role = email.endsWith("@taraqqub.om") ? "authority" : "citizen";
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.json({
@@ -261,26 +273,34 @@ app.post("/logout", async(req,res) =>{
 app.post("/admin/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    let user = await User.findOne({ email });
+    
+    // 1. البحث عن الحساب في قاعدة البيانات فقط
+    console.log("Admin Login Attempt for:", email);
+    const user = await User.findOne({ email });
 
     if (!user) {
-      if (email.includes("@taraqqub") || email.includes("@admin")) {
-        const hashedPassword = await bcrypt.hash(password, 12);
-        user = await new User({ name: email.split("@")[0], email, password: hashedPassword, role: "admin", phone: "N/A" }).save();
-      } else {
-        return res.status(404).json({ success: false, message: "Admin account not found and email not authorized" });
-      }
+      return res.status(403).json({ success: false, message: "🚨 الحساب غير موجود في قاعدة البيانات أصلاً" });
+    }
+    // 2. إذا لم يوجد الحساب، أو وجد ولكن رتبته ليست admin في المونجو -> نرفضه فوراً بـ 403
+    if (user.role !== "admin") {
+      return res.status(403).json({ success: false, message: "Access denied. Admin account not authorized." });
     }
 
-    if (user.role !== "admin") return res.status(403).json({ message: "Access denied. Admin only." });
-
+    // 3. التحقق من صحة كلمة المرور
     const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(401).json({ message: "Wrong password" });
+    if (!match) return res.status(401).json({ success: false, message: "Wrong password" });
 
+    // 4. إنشاء التوكن وإرسال البيانات كاملة
     const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });
-    res.json({ success: true, token, user });
+    
+    res.json({ 
+      success: true, 
+      token, 
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role } 
+    });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 

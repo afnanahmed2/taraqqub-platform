@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import logoTaraqqub from "../Images/logoTaraqqub.png";
 
 const Header = () => {
-  const user = useSelector((state) => state.users?.user || null);
+  const user = useSelector((state) => state.users?.user || state.admin?.admin || null);
 
   const isLogin = !!user;
   const isAdmin = user?.role === "admin"; // ✅ تعريف الأدمن
