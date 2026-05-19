@@ -57,6 +57,7 @@ app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(cors({
   origin: [
     'http://localhost:3000', 
+    'https://taraqqub-client.onrender.com',
     'https://taraqqub-platform.onrender.com'
   ], 
   credentials: true,
