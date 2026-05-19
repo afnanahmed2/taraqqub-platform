@@ -14,30 +14,29 @@ function AdminLogin() {
   const [loading, setLoading] = useState(false);
 
   const handleAdminLogin = async (e) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-  try {
-    // 1. استدعاء الدالة
-    const result = await dispatch(adminLogin({ email, password }));
+    try {
+      // 1. استدعاء الدالة
+      const result = await dispatch(adminLogin({ email, password }));
 
-    console.log("Redux Login Result:", result);
-    // 2. التحقق من النجاح (fulfilled)
-    if (result.meta.requestStatus === "fulfilled") {
-      const data = result.payload; // البيانات القادمة من السيرفر (التوكن وبيانات الأدمن)
-      //  التعديل الجوهري: استخدام result.payload بدلاً من result.data
-      //const data = result.payload; 
-      
-// التغيير هنا: نتأكد أن السيرفر أعاد التوكن وبيانات المستخدم الحقيقية
+      console.log("Redux Login Result:", result);
+      // 2. التحقق من النجاح (fulfilled)
+      if (result.meta.requestStatus === "fulfilled") {
+        const data = result.payload; // البيانات القادمة من السيرفر (التوكن وبيانات الأدمن)
+        
+        // التغيير هنا: نتأكد أن السيرفر أعاد التوكن وبيانات المستخدم الحقيقية
         if (data && (data.token || data.user)) {
           
           // ✅ الحفظ الصحيح والمتناسق مع كود الهيدر ليتعرف عليه فوراً
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user)); // حفظ بيانات الأدمن كاملة
           
-          // التوجه لصفحة الداشبورد
-          navigate("/AdminDashboard"); 
+          // 🛠️ التعديل الجوهري هنا:
+          // بدلاً من navigate، نستخدم window.location.href لإجبار الهيدر على التحديث فوراً وقراءة الـ localStorage الجديد
+          window.location.href = "/AdminDashboard"; 
         } else {
           setError("Login failed: Token or User data missing");
         }
