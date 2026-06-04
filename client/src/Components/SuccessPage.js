@@ -93,6 +93,8 @@ export default function SuccessPage() {
         <div className="alert alert-warning">
           <h4>⚠️ Report Rejected</h4>
           <p>This report was detected as spam.</p>
+          {/* ***Update Neeeew*** إضافة عرض درجة السبام (اختياري) */}
+          {report?.spamScore && <small>Spam score: {report.spamScore}/100</small>}
         </div>
       </div>
     );
@@ -204,15 +206,23 @@ export default function SuccessPage() {
               </span>
             </p>
 
-            <p>
-              <strong>Assigned Authority:</strong> {authority}
-            </p>
-
-            <p>
-              <strong>Recommendation:</strong>
-              <br />
+           <p><strong>Recommendation:</strong></p>
+            {/* ***Update Neeeew*** تم الاحتفاظ بتنسيق الرسالة الطويلة (بدون إضافة رسالة New) */}
+            <div style={{ 
+              backgroundColor: "#f0f7ff", 
+              padding: "12px 16px", 
+              borderRadius: "12px",
+              marginTop: "8px",
+              marginBottom: "16px",
+              textAlign: "left",
+              fontSize: "14px",
+              lineHeight: "1.6",
+              whiteSpace: "pre-line"
+            }}>
               {report?.userRecommendation?.message || recommendation}
-            </p>
+            </div>
+
+            
 
             {report?.weather?.condition && (
               <div style={{

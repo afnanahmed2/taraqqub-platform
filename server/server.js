@@ -27,7 +27,8 @@ import { smartRouteReport } from "./AI/smartRouting.js";
 import tipRoutes from "./routes/tipRoutes.js";
 import Tip from "./Models/Tips.js";
 import Feedback from "./Models/Feedback.js";
-
+// ***Update Neeeew*** إضافة نموذج البلاغات المرفوضة (RejectedReport) لتخزين السبام العالي
+import RejectedReport from "./Models/RejectedReport.js";
 import dns from "node:dns";
 dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
@@ -397,7 +398,24 @@ app.post("/createReport", authenticate, upload.array("media", 5), async (req, re
 
     // ── دمج النتائج عبر combineAIWithSpam ────────────────────────────
     const combined = combineAIWithSpam(spamResult, aiResult);
-
+// ***Update Neeeew*** استخراج درجة السبام (spamScore) من نتيجة الدمج
+    const spamScore = combined.spamScore || 0;
+    // ***Update Neeeew*** رفض السبام العالي (≥70) – لا يتم حفظه في Report ويُحفظ في RejectedReport
+        if (spamScore >= 70) {
+          await RejectedReport.create({
+            title, description, category, mediaUrls,
+            spamScore, spamReasons: combined.reasons || [],
+          });
+          return res.status(400).json({
+            success: false,
+            rejected: true,
+            message: "The report was not accepted. Please ensure the report concerns public infrastructure and includes a clear description and supporting images."
+          });
+        }
+    
+        // ***Update Neeeew*** جميع البلاغات المقبولة (spamScore < 70) تُحفظ بحالة "pending" (بدلاً من New/PendingReview)
+        const finalStatus = "pending";
+    
     // توليد التوصية
     const userRecommendationData = generateUserRecommendation(aiResult, spamResult, title, description);
     const finalPriority          = userRecommendationData.priority || aiResult?.priority || "Medium";
@@ -513,7 +531,7 @@ app.post("/createReport", authenticate, upload.array("media", 5), async (req, re
       shortUserMessage:     finalAiAnalysis.shortUserMessage,
       adminRecommendation:  finalAiAnalysis.adminRecommendation,
       assignedAuthority:    finalAuthority,
-      status:               reportStatus,
+      status: finalStatus,  // ***Update Neeeew*** دائماً "pending"
       aiAnalysis:           finalAiAnalysis,
       categoryCorrected:    finalAiAnalysis.categoryCorrected,
       originalCategory:     finalAiAnalysis.originalCategory,
@@ -521,12 +539,16 @@ app.post("/createReport", authenticate, upload.array("media", 5), async (req, re
       forcedCorrection:     finalAiAnalysis.forcedCorrection,
       aiConfidence:         finalAiAnalysis.confidence,
       privateType:          finalPrivateType,  // ✅ حفظ نوع الملكية
+      spamScore,                     // ***Update Neeeew*** حفظ درجة السبام
+    
     });
 
     // ── إرجاع الرد مع جميع البيانات ──────────────────────────────────
     return res.json({
       success:           true,
       report,
+      //Neeeew
+      status: finalStatus,
       isSpam:            finalAiAnalysis.isSpam,
       spamScore:         finalAiAnalysis.spamScore,
       categoryCorrected: finalAiAnalysis.categoryCorrected,

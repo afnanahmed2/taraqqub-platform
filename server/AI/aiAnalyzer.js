@@ -68,7 +68,16 @@ const CONFIG = {
     COMPRESS_QUALITY: 80,
     MAX_WIDTH: 1500,
     MAX_IMAGES_TO_ANALYZE: 3, // 🆕 حد أقصى 3 صور للتحليل
-  }
+   },
+
+
+  // ***Update Neeeew*** قائمة نماذج Gemini المتاحة
+  GEMINI_MODELS: [
+    "gemini-2.0-flash-lite-001",
+    "gemini-2.0-flash-001",
+    "gemini-2.5-flash-lite",
+    "gemini-2.0-flash"
+  ]
 };
 
 const CATEGORIES = [
@@ -231,10 +240,9 @@ const REAL_FLOOD_KEYWORDS = [
 ];
 
 const ROAD_DAMAGE_KEYWORDS = [
-  "حفرة", "طريق متضرر", "تشقق", "مطبات",
-  "pothole", "potholes", "cracked road", "road damage", "asphalt crack"
+  "حفرة", "طريق متضرر", "تشقق", "مطبات", "خطر", "تصدع", "انهيار", "تهالك", "ضرر",
+  "pothole", "potholes", "cracked road", "road damage", "asphalt crack", "deep hole", "dangerous"
 ];
-
 const TRAFFIC_SIGNAL_KEYWORDS = [
   "إشارة مرور", "إشارة ضوئية", "إشارة معطلة",
   "traffic light", "traffic signal", "signal not working"
@@ -281,45 +289,70 @@ function hasContext(report, legitMatches) {
 
 function detectRoadDamageIndependently(text) {
   const additionalRoadKeywords = [
-    "road", "street", "highway", "asphalt", "pavement", "طريق", "شارع", "رصيف"
+    "road", "street", "highway", "asphalt", "pavement", "طريق", "شارع", "رصيف", "خطر", "ضرر"
   ];
- 
   let hasRoadKeyword = ROAD_DAMAGE_KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
   let hasContextKeyword = additionalRoadKeywords.some(kw => text.includes(kw.toLowerCase()));
- 
-  return hasRoadKeyword || (hasContextKeyword && text.includes("damage"));
+  // إذا وجدت كلمة "حفرة" أو "خطر" مع سياق الطريق، اعتبرها Road Damage
+  const hasHoleOrDanger = text.includes("حفرة") || text.includes("خطر") || text.includes("pothole");
+  return hasRoadKeyword || (hasContextKeyword && (text.includes("damage") || text.includes("حفرة") || text.includes("متصدع") || hasHoleOrDanger));
 }
 
+// ***Update Neeeew*** تحسين تصحيح الفئة للغة العربية
+// ***Update Neeeew*** تحسين تصحيح الفئة للغة العربية بقوة
 function correctCategoryByKeywords(title, description, userSelectedCategory) {
   const text = `${title} ${description}`.toLowerCase();
- 
+  
+  // كلمات مفتاحية لـ Road Damage (عربية وإنجليزية)
+  const roadDamageKeywords = [
+    "حفرة", "طريق", "متصدع", "تشقق", "مطبات", "خطر", "تصدع", "انهيار", "تهالك", "ضرر",
+    "road", "pothole", "cracked", "asphalt", "pavement", "damage", "dangerous", "deep hole"
+  ];
+  
+  // التحقق من وجود أي كلمة من Road Damage في النص
+  let isRoadDamage = false;
+  for (const kw of roadDamageKeywords) {
+    if (text.includes(kw)) {
+      isRoadDamage = true;
+      console.log(`🔍 Road damage keyword detected: "${kw}"`);
+      break;
+    }
+  }
+  
+  // إذا تم الكشف عن Road Damage، نرجع التصحيح فوراً (حتى لو اختار المستخدم شيئاً آخر)
+  if (isRoadDamage) {
+    return { 
+      category: "Road Damage", 
+      confidence: 95, 
+      reason: "Detected road damage keywords (e.g., حفرة, طريق, خطر)" 
+    };
+  }
+  
+  // باقي الفئات (كما هي موجودة سابقاً)
   if (BLOCKED_DRAIN_KEYWORDS.some(kw => text.includes(kw))) {
     return { category: "Blocked Drain", confidence: 98, reason: "Detected drain/sewer issue" };
   }
- 
+  
   if (REAL_FLOOD_KEYWORDS.some(kw => text.includes(kw))) {
     return { category: "Flooding/Drainage", confidence: 95, reason: "Detected flood/water accumulation" };
   }
- 
+  
   if (TRAFFIC_SIGNAL_KEYWORDS.some(kw => text.includes(kw))) {
     return { category: "Traffic Signal", confidence: 95, reason: "Detected traffic signal issue" };
   }
- 
-  if (detectRoadDamageIndependently(text)) {
-    return { category: "Road Damage", confidence: 95, reason: "Detected pothole/road damage" };
-  }
- 
+  
   if (WASTE_KEYWORDS.some(kw => text.includes(kw))) {
     return { category: "Waste Management", confidence: 95, reason: "Detected garbage/waste issue" };
   }
- 
+  
   if (STREET_LIGHT_KEYWORDS.some(kw => text.includes(kw))) {
     return { category: "Street Lighting", confidence: 95, reason: "Detected street light issue" };
   }
- 
+  
   return null;
-}
-
+}  
+  
+  
 /* ------------------------------------------------------------------ */
 /*  🧠 7. كشف السبام                                                 */
 /* ------------------------------------------------------------------ */
@@ -348,6 +381,45 @@ export function detectSpam(report = {}) {
   let spamScore = 0;
   const reasons = [];
   const positives = [];
+
+      // ***Update Neeeew*** كشف النصوص العشوائية (gibberish) بقوة
+  const isGibberish = (str) => {
+    if (!str || str.length < 3) return true;
+    // نسبة الأحرف المتكررة
+    const repeated = (str.match(/(.)\1{2,}/g) || []).length;
+    const repeatedRatio = repeated * 3 / str.length;
+    // نسبة الحروف الساكنة المتتالية
+    const consonantSeq = /[bcdfghjklmnpqrstvwxyz]{4,}/i.test(str);
+    // خلو النص من حروف العلة (للنصوص القصيرة)
+    const noVowels = !/[aeiou]/i.test(str) && str.length > 2;
+    // وجود أحرف عشوائية غير كلمات
+    const randomChars = /[asdfghjkl]{4,}/i.test(str);
+    return repeatedRatio > 0.5 || consonantSeq || noVowels || randomChars;
+  };
+
+  // إذا كان العنوان والوصف قصيرين جداً (< 10 أحرف) وبدون معنى
+  const titleShort = title.replace(/\s/g, "").length < 10;
+  const descShort = description.replace(/\s/g, "").length < 10;
+  
+  if (titleShort && descShort) {
+    spamScore = Math.max(spamScore, 80);
+    reasons.push("Title and description are too short and likely spam");
+  }
+  
+  if (isGibberish(title) && isGibberish(description)) {
+    spamScore = Math.max(spamScore, 85);
+    reasons.push("Report contains random/gibberish text - marked as spam");
+  } else if (isGibberish(title) || isGibberish(description)) {
+    spamScore = Math.max(spamScore, 65);
+    reasons.push("Report partially contains random text - needs review");
+  }
+
+  // كشف الكلمات المفتاحية الثقيلة (asdf, qwerty, ...) بشكل أكثر صرامة
+  const heavySpamMatchesExtra = filterKeywords(combined, SPAM_KEYWORDS_HEAVY);
+  if (heavySpamMatchesExtra.length >= 2) {
+    spamScore = Math.max(spamScore, 75);
+    reasons.push(`Multiple spam keywords: ${heavySpamMatchesExtra.slice(0, 3).join(', ')}`);
+  }
 
   if (title.replace(/\s/g, "").length < 5) {
     spamScore += CONFIG.WEIGHTS.SHORT_TITLE;
@@ -541,14 +613,15 @@ async function processImages(mediaUrls = []) {
   const results = await Promise.all(
     urlsToProcess.map(async (url, index) => {
       try {
-        console.log(`   📸 Image ${index + 1}: fetching...`);
+        console.log(`    Image ${index + 1}: fetching...`);
         const res = await fetch(url);
         if (!res.ok) return null;
        
         const mimeType = res.headers.get("content-type");
+        console.log("MimeType:", mimeType);
        
         if (!CONFIG.IMAGES.SUPPORTED_TYPES.includes(mimeType)) {
-          console.warn(`   ⚠️ Unsupported image format: ${mimeType}`);
+          console.warn(`    Unsupported image format: ${mimeType}`);
           return null;
         }
        
@@ -557,14 +630,14 @@ async function processImages(mediaUrls = []) {
         // التحقق من الحجم وضغطه إذا لزم الأمر
         const maxSizeBytes = CONFIG.IMAGES.MAX_SIZE_MB * 1024 * 1024;
         if (buffer.byteLength > maxSizeBytes) {
-          console.log(`   📦 Image too large (${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB), compressing...`);
+          console.log(`    Image too large (${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB), compressing...`);
           buffer = await compressImage(buffer, mimeType);
          
           if (buffer.byteLength > maxSizeBytes) {
-            console.warn(`   ⚠️ Image still too large after compression, skipping`);
+            console.warn(`    Image still too large after compression, skipping`);
             return null;
           }
-          console.log(`   ✅ Compressed to ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`);
+          console.log(`    Compressed to ${(buffer.byteLength / 1024 / 1024).toFixed(2)}MB`);
         }
        
         return {
@@ -574,14 +647,14 @@ async function processImages(mediaUrls = []) {
           }
         };
       } catch (error) {
-        console.error(`   ❌ Error processing image: ${error.message}`);
+        console.error(`    Error processing image: ${error.message}`);
         return null;
       }
     })
   );
  
   const validResults = results.filter(Boolean);
-  console.log(`✅ Successfully processed ${validResults.length}/${urlsToProcess.length} images`);
+  console.log(` Successfully processed ${validResults.length}/${urlsToProcess.length} images`);
   return validResults;
 }
 
@@ -604,10 +677,13 @@ async function callModel(model, contents, API_KEY) {
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) return null;
     text = text.replace(/```json|```/g, "").trim();
+    console.log("Gemini Raw:", text);
     return JSON.parse(text);
-  } catch {
-    return null;
-  }
+  } catch (err) {
+  console.error("Gemini Parse Error:", err);
+  console.error("Raw Response:", text);
+  return null;
+}
 }
 
 /* ------------------------------------------------------------------ */
@@ -632,73 +708,84 @@ export function generateUserRecommendation(aiResult, spamResult, title, descript
   const { category, priority, confidence } = aiResult || {};
   const isSpam = spamResult?.isSpam || false;
   const spamScore = spamResult?.spamScore || 0;
+  const privateCheck = detectPrivateProperty(title, description);
 
+  // ---------- SPAM HIGH (≥70) ----------
   if (isSpam && spamScore >= 70) {
     return {
-      message: "This report appears to be related to a private company, business, or property. Please contact the responsible private entity directly for assistance.",
+      message: "This report appears to be unrelated to public infrastructure or lacks valid evidence. Please ensure you are reporting a genuine issue (e.g., road damage, flooding, broken lights) with a clear description and supporting images. For private property or business issues, contact the responsible entity directly.",
       type: "spam",
       action: "resubmit",
       priority: "Low"
     };
   }
-
+  // ---------- SPAM MEDIUM (40-69) - needs more details ----------
   if (spamScore >= 40 && spamScore < 70) {
     return {
-      message: "Your report lacks some important details. Please add more information (precise location, clearer description, photos) to ensure faster processing.",
+      message: "Your report is missing important details. To help us process it faster:\n\n• Add a more precise location (street name, landmark)\n• Write a clearer description of the problem\n• Upload clear photos or videos showing the issue\n\nYou can edit and resubmit this report. Thank you for helping improve Oman's infrastructure.",
       type: "warning",
       action: "provide_more_details",
       priority: priority || "Medium"
     };
   }
 
-  const privateCheck = detectPrivateProperty(title, description);
 
-  if (privateCheck.isPrivate) {
-    switch (privateCheck.type) {
-      case "HOUSE":
-        return {
-          message: `This is a PRIVATE HOUSE issue (your home/private residence).
+   // ---------- PRIVATE PROPERTY (HOUSE) ----------
+  if (privateCheck.isPrivate && privateCheck.type === "HOUSE") {
+    return {
+            message: `This appears to be a PRIVATE HOUSE
+             issue (your home or private residence).
+              The Taraqqub platform only handles public infrastructure
+               problems.\n\nWhat you can do:\n• Contact a private
+                maintenance company.\n• If it's a municipal service
+                 (e.g., sewage line outside your house),
+                  please clarify the location.\n\nThis report will
+                   not be forwarded to government authorities.`,
 
-The Taraqqub platform ONLY handles PUBLIC infrastructure issues.
-
-For issues inside your home or private property:
-- Please contact a private maintenance company
-- Or fix it yourself as the property owner
-
-This report will NOT be processed by government authorities.`,
-          type: "redirect",
-          action: "contact_private_entity",
-          authority: "the property owner/private maintenance",
-          priority: "Low"
-        };
-
-      case "PRIVATE_MOSQUE":
-        return {
-          message: `This is a PRIVATE MOSQUE located inside a commercial property (${privateCheck.privateLocation || "shopping mall or commercial building"}).
-
-This mosque is NOT owned by the government. The responsibility falls on the property owner or management.
-
-This report will NOT be processed by the Ministry of Endowments.`,
-          type: "redirect",
-          action: "contact_private_entity",
-          authority: "the property owner/management",
-          priority: "Low"
-        };
-
-      default:
-        return {
-          message: "This appears to be a private property issue. Please contact the responsible private entity directly.",
-          type: "redirect",
-          action: "contact_private_entity",
-          authority: "the private entity",
-          priority: "Low"
-        };
-    }
+      type: "redirect",
+      action: "contact_private_entity",
+      authority: "property owner / private maintenance",
+      priority: "Low"
+    };
   }
 
+      
+  // ---------- PRIVATE MOSQUE ----------
+  if (privateCheck.type === "PRIVATE_MOSQUE") {
+    const locationHint = privateCheck.privateLocation || "shopping mall or commercial building";
+    return {
+           message: `Private Mosque Detected
+            – This mosque is located inside ${locationHint} 
+            and is **not owned by the government. Responsibility lies with
+             the property owner or management.\n\nWhat you can do:\n• 
+             Contact the mall or building management.\n• 
+             If the issue is urgent (safety hazard), 
+             notify civil defense.\n\nThis report will not be
+              processed by the Ministry of Endowments.`,
+
+      type: "redirect",
+      action: "contact_private_entity",
+      authority: "property owner/management",
+      priority: "Low"
+    };
+  }
+
+
+     
+
+   // ---------- PUBLIC MOSQUE ----------
   if (privateCheck.type === "PUBLIC_MOSQUE") {
     return {
-      message: `This report concerns a PUBLIC MOSQUE. It has been forwarded to the Ministry of Endowments and Religious Affairs for action. You can track the status through your account.`,
+      message: `Public Mosque – Your report has been forwarded to 
+      Ministry of Endowments and Religious Affairs
+       for action.\n\n What the authorities will do:
+       \n• The ministry will inspect the mosque and arrange necessary
+        repairs.\n• If the issue is urgent, they will prioritize it.
+        \n\n What you can do in the meantime:\n• Inform the mosque's imam or 
+        committee about this report.\n• If the issue is urgent
+         (structural damage, electrical hazard), please call the ministry 
+         directly.\n• Track the status of this report from your account.
+         \n\nThank you for helping maintain religious facilities.`,
       type: "routed",
       action: "auto_routed",
       authority: "Ministry of Endowments and Religious Affairs",
@@ -706,12 +793,32 @@ This report will NOT be processed by the Ministry of Endowments.`,
     };
   }
 
+   // ---------- OTHER PRIVATE BUSINESS ----------
+  if (privateCheck.isPrivate) {
+    return {
+      message: `This appears to be a private business or commercial
+       property issue (${privateCheck.type}).
+        Such issues are not processed by Taraqqub.
+        \n\nPlease contact the property management or relevant
+         private entity directly. If the problem affects public safety 
+         (e.g., blocked sidewalk), please resubmit with a clearer 
+         description of the public impact.`,
+      type: "redirect",
+      action: "contact_private_entity",
+      authority: "the private entity",
+      priority: "Low"
+    };
+  }
+  // ---------- CATEGORY CORRECTED ----------
   const wasCategoryCorrected = aiResult?.categoryCorrected || false;
   const originalCategory = aiResult?.originalCategory;
-
   if (wasCategoryCorrected && originalCategory && originalCategory !== category) {
+    const responsible = getResponsibleAuthority(category); // ***Update Neeeew*** إضافة هذا السطر
     return {
-      message: `✅ Your report has been re-categorized from "${originalCategory}" to "${category}" based on AI analysis, and forwarded to ${getResponsibleAuthority(category)} for processing. This ensures your issue reaches the right team faster.`,
+      message: `Category corrected – Your report has been automatically
+       re-categorized from "${originalCategory}" to "${category}" based on AI analysis and forwarded to ${responsible} for faster handling.
+        \n\nWhat you can do:\n• Track the status in your account. \n• If you disagree with the change, you can add a comment.
+         \n\nThank you for using Taraqqub.`,
       type: "routed_corrected",
       action: "auto_routed",
       priority: priority || "Medium",
@@ -733,7 +840,15 @@ This report will NOT be processed by the Ministry of Endowments.`,
   for (const [kw, auth] of Object.entries(govMap)) {
     if (combined.includes(kw)) {
       return {
-        message: `This report falls under the responsibility of ${auth}. It has been forwarded to them for processing. You can track the status through your account.`,
+        message: `${auth} has been notified of your report regarding a
+         ${kw} facility.\n\n What the authorities will do:\n•
+          They will review the issue and take necessary action
+           (repairs, safety checks).\n• If urgent, they will dispatch a 
+           team immediately.\n\n What you can do:
+           \n• If the issue is urgent (e.g., broken equipment,
+            safety hazard), contact the facility directly.\n• 
+            Track the report status from your account.\n\n
+            Thank you for helping improve public services.`,
         type: "routed",
         action: "auto_routed",
         authority: auth,
@@ -743,41 +858,187 @@ This report will NOT be processed by the Ministry of Endowments.`,
   }
 
   const responsible = getResponsibleAuthority(category);
-
-  switch (category) {
-    case "Flooding/Drainage":
-      if (priority === "High") {
-        return {
-          message: `⚠️ WARNING: Serious water drainage issue! ${responsible} has been notified urgently. Please stay away from the area if possible.`,
-          type: "emergency",
-          action: "urgent_dispatch",
-          priority: "High"
-        };
-      }
-      return {
-        message: `Your flooding/drainage report has been forwarded to ${responsible} for processing. You can track the status through your account.`,
-        type: "routed",
-        action: "auto_routed",
-        priority: priority || "Medium"
-      };
-
-    case "Traffic Signal":
-      return {
-        message: `Your traffic signal report has been forwarded to ${responsible} for processing. This will be handled with high priority. You can track the status through your account.`,
-        type: "routed",
-        action: "auto_routed",
-        priority: "High"
-      };
-
-    default:
-      return {
-        message: `Your report has been received and forwarded to ${responsible} for review. You can track the status through your account.`,
-        type: "received",
-        action: "under_review",
-        priority: priority || "Medium"
-      };
+// ---------- FLOODING / DRAINAGE ----------
+  if (category === "Flooding/Drainage") {
+    let message = "";
+    if (priority === "High") {
+      message = `URGENT FLOODING / DRAINAGE ISSUE
+       – ${responsible} has been notified immediately.\n\n
+       Your safety comes first:\n• Stay away from flooded areas 
+       (risk of drowning, electric shock).\n• Do NOT drive through
+        standing water – turn around.\n• Warn neighbors and vulnerable 
+        people.\n• Call Civil Defense (999) if life is at risk.\n\n
+        What the authorities will do:
+        \n• Dispatch emergency teams to assess and pump water.
+        \n• Clear blocked drains and redirect water flow.\n• 
+        Coordinate with civil defense if needed.\n\n
+        Your report may save lives.`;
+    } else {
+      message = `Flooding / Drainage Report
+       – Forwarded to ${responsible}
+       .\n\nWhat the authorities will do:
+       \n• Inspect the drainage system and remove blockages.
+       \n• Monitor the area during rains and take preventive action.\n\n
+       What you can do:**\n• Avoid low-lying areas when it rains.\n• 
+       Report any worsening of the situation via the app.\n• 
+       Clear nearby surface drains if safe to do so.\n\n
+       Thank you for helping prevent flooding hazards.`;
+    }
+    return {
+      message: message,
+      type: priority === "High" ? "emergency" : "routed",
+      action: priority === "High" ? "urgent_dispatch" : "auto_routed",
+      priority: priority === "High" ? "High" : (priority || "Medium")
+    };
   }
+
+  // ---------- BLOCKED DRAIN ----------
+  if (category === "Blocked Drain") {
+    let message = `Blocked Drain Report
+     – Forwarded to **${responsible}.\n\n
+     What the authorities will do:
+     \n• Send a maintenance team to clear the blockage.
+     \n• Check for underlying sewer issues.\n• 
+     Clean the surrounding area.\n\n
+     What you can do:**\n• Avoid using nearby drains until resolved.
+     \n• Do not attempt to unblock it yourself (risk of sewage).\n•
+      Warn children and pets to stay away.\n\nExpected response time: 
+      within a few days depending on urgency.`;
+
+    if (priority === "High") {
+      message = `RGENT Blocked Drain – ${responsible} notified immediately.\n\n
+      What the authorities will do:
+      \n• Emergency team dispatched to clear the blockage.\n• 
+      Inspect sewage lines for overflow risks.\n\n
+      Your actions:\n• Stay away from the area 
+      (risk of flooding/contamination).\n•
+       Do not use water until cleared if it's backing up
+        into your property.\n\nThank you for reporting.`;
+    }
+    return {
+      message: message,
+      type: "routed",
+      action: "auto_routed",
+      priority: priority || "Medium"
+    };
+  }
+
+  // ---------- TRAFFIC SIGNAL ----------
+  if (category === "Traffic Signal") {
+    return {
+      message: `Traffic Signal Issue
+       – Your report has been forwarded to 
+       ${responsible}** with high priority.\n\nWhat the authorities will
+        do:\n• Dispatch a technician to inspect
+         and repair the signal.\n• Implement temporary traffic
+          management if needed.\n\nWhat you can do:
+          \n• Approach the intersection with caution.\n• 
+          If the signal is completely dark, treat it as a 4-way stop.
+          \n• You may also call ROP traffic department directly for
+           immediate hazards.\n\nTrack the status from your account.`,
+      type: "routed",
+      action: "auto_routed",
+      priority: "High"
+    };
+  }
+
+  // ---------- STREET LIGHTING ----------
+  if (category === "Street Lighting") {
+    return {
+      message: `Street Lighting Report – Forwarded to ${responsible}.\n\n
+      What the authorities will do:\n• Inspect the faulty light pole.
+      \n• Replace bulbs or repair electrical components.\n•
+       Usually completed within 1-2 weeks depending on location.
+       \n\nWhat you can do:\n• Avoid walking near the dark area at night.
+       \n• Report any exposed wires or sparks immediately (call ROP).
+       \n\nThank you for helping keep our streets safe.`,
+      type: "routed",
+      action: "auto_routed",
+      priority: priority || "Medium"
+    };
+  }
+
+  // ---------- WASTE MANAGEMENT ----------
+  if (category === "Waste Management") {
+    return {
+      message: `Waste Management Report
+       – Forwarded to **${responsible}.\n\n
+       What the authorities will do:
+       \n• Schedule waste collection and cleaning.\n• 
+       Investigate illegal dumping if applicable.\n\nWhat you can do:
+       \n• Avoid touching the waste (health hazard).\n•
+        If it's blocking a public path, use an alternative route.\n• 
+        You can also call the municipality if the situation worsens.\n\n
+        Thank you for helping keep Oman clean.`,
+      type: "routed",
+      action: "auto_routed",
+      priority: priority || "Medium"
+    };
+  }
+
+  // ---------- PUBLIC FACILITY DAMAGE ----------
+  if (category === "Public Facility Damage") {
+    return {
+      message: `Public Facility Damage Report – Forwarded to 
+      ${responsible}.\n\n What the authorities will do:\n•
+       Inspect the facility and assess damage.\n• 
+       Initiate repair or maintenance procedures.\n\n
+       What you can do:\n• Avoid the damaged area (risk of injury).\n• 
+       If the facility is a school or hospital, 
+       inform the administration.\n\nTrack the status from your account.`,
+      type: "routed",
+      action: "auto_routed",
+      priority: priority || "Medium"
+    };
+  }
+
+  // ---------- ROAD DAMAGE ----------
+  if (category === "Road Damage") {
+    let message = `Road Damage Report – Forwarded to ${responsible}.\n\n
+    What the authorities will do:\n• Inspect the road and mark the
+     hazardous area.\n• Schedule repairs (patching, resurfacing).\n•
+      In urgent cases, they may close the lane temporarily.\n\n
+    What you can do right now:\n• Avoid the damaged area – 
+    it may cause tire damage or loss of control.\n• 
+    If you must drive over it, slow down and keep both hands on 
+    the wheel.\n• Warn other drivers by using hazard lights if safe.\n• 
+    If the pothole is deep and dangerous, call the municipality hotline.\n\n
+    Thank you for reporting – you help make roads safer.`;
+    if (priority === "High") {
+      message = `RGENT Road Damage – ${responsible} notified
+       immediately.\n\nSafety first:\n• 
+      Do not approach the damaged area if it's a deep collapse.\n•
+       If you are driving, slow down and avoid sudden manoeuvres.\n•
+        Use hazard lights to warn others.\n\n
+        Authorities will:\n• Dispatch an emergency road crew.\n• 
+        Set up warning signs and barriers.\n• Repair as soon as possible.
+        \n\nYour report may prevent serious accidents.`;
+    }
+    return {
+      message: message,
+      type: priority === "High" ? "emergency" : "received",
+      action: priority === "High" ? "urgent_dispatch" : "under_review",
+      priority: priority || "Medium"
+    };
+  }
+
+  // ---------- DEFAULT (with actionable advice) ----------
+  return {
+    message: `Your report has been received and forwarded to ${responsible}
+     for review and action.\n\nWhat you can do in the meantime:\n• 
+     Track the report status from your account dashboard\n• 
+     If the issue is urgent (safety hazard), contact the local
+      municipality or relevant authority directly\n• 
+      Avoid the dangerous area and warn others if applicable\n• 
+      You may add updates or new photos later if the situation 
+      worsens\n\nExpected response time varies by severity. 
+      Thank you for helping improve infrastructure in Oman.`,
+    type: "received",
+    action: "under_review",
+    priority: priority || "Medium"
+  };
 }
+
 
 export function generateShortUserMessage(recommendation) {
   if (recommendation.type === "spam") return "Private entity issue";
@@ -852,37 +1113,16 @@ Return ONLY JSON:
   "isIssueVisible": true
 }`;
 
-      const contents = [
-        {
-          parts: [
-            { text: imagePrompt },
-            ...imageParts
-          ]
-        }
-      ];
+      
 
-      aiImageAnalysis = await callModel(
-        "gemini-1.5-flash",
-        contents,
-        API_KEY
-      );
-
+       const contents = [{ parts: [{ text: imagePrompt }, ...imageParts] }];
+      aiImageAnalysis = await callModel("gemini-2.0-flash", contents, API_KEY);
       if (aiImageAnalysis) {
-        console.log(`✅ AI Image Analysis Complete:`);
-        console.log(`   📸 Detected: ${aiImageAnalysis.detectedCategory}`);
-        console.log(`   🎯 Confidence: ${aiImageAnalysis.confidence}%`);
-        console.log(`   👁️ Issue Visible: ${aiImageAnalysis.isIssueVisible}`);
-        console.log(`   📝 Findings: ${aiImageAnalysis.visualFindings}`);
+        console.log(`AI Image Analysis Complete: ${aiImageAnalysis.detectedCategory} (${aiImageAnalysis.confidence}%)`);
       } else {
-        console.log(`⚠️ AI Image Analysis failed or returned null`);
+        console.log(`AI Image Analysis failed or returned null`);
       }
-    } else {
-      console.log(`⚠️ No valid images to analyze after processing`);
     }
-  } else if (hasImages && !API_KEY) {
-    console.log(`⚠️ Images present but no Gemini API key - skipping AI image analysis`);
-  } else {
-    console.log(`ℹ️ No images to analyze`);
   }
 
   // ============================================================
@@ -892,7 +1132,7 @@ Return ONLY JSON:
   const privateCheck = detectPrivateProperty(title, description);
  
   if (privateCheck.type === "PRIVATE_MOSQUE") {
-    console.log(`🕌 PRIVATE MOSQUE detected → Category: Other`);
+    console.log(`PRIVATE MOSQUE detected → Category: Other`);
    
     return {
       category: "Other",
@@ -913,7 +1153,7 @@ Return ONLY JSON:
   }
  
   if (privateCheck.type === "PUBLIC_MOSQUE") {
-    console.log(`🕌 PUBLIC MOSQUE detected → Category: Public Facility Damage`);
+    console.log(`PUBLIC MOSQUE detected → Category: Public Facility Damage`);
    
     let priority = "Medium";
     let priorityScore = 50;
@@ -945,7 +1185,7 @@ Return ONLY JSON:
   }
  
   if (privateCheck.isPrivate) {
-    console.log(`🏠 PRIVATE PROPERTY DETECTED: ${privateCheck.type} → Priority LOW`);
+    console.log(`PRIVATE PROPERTY DETECTED: ${privateCheck.type} → Priority LOW`);
    
     return {
       category: "Other",
@@ -979,7 +1219,7 @@ Return ONLY JSON:
       aiImageAnalysis.detectedCategory &&
       aiImageAnalysis.confidence > 80) {
    
-    console.log(`📸 AI IMAGE ANALYSIS OVERRIDE:`);
+    console.log(` AI IMAGE ANALYSIS OVERRIDE:`);
     console.log(`   Keyword correction: ${correction?.category || "none"}`);
     console.log(`   Image suggests: ${aiImageAnalysis.detectedCategory} (${aiImageAnalysis.confidence}%)`);
     console.log(`   Issue clearly visible in image`);
@@ -990,13 +1230,13 @@ Return ONLY JSON:
       reason: `Detected visually from uploaded image: ${aiImageAnalysis.visualFindings || "visible issue"}`
     };
    
-    console.log(`   ✅ Using image-based correction`);
+    console.log(`   Using image-based correction`);
   }
  
   if (correction && CONFIG.CATEGORY_CORRECTION.ENABLED) {
     const isCorrected = (correction.category !== reportCategory);
    
-    console.log(`📌 Correction applied:`);
+    console.log(`Correction applied:`);
     console.log(`   Original: ${reportCategory}`);
     console.log(`   Corrected to: ${correction.category}`);
     console.log(`   Reason: ${correction.reason}`);
@@ -1039,7 +1279,7 @@ Return ONLY JSON:
       const weather = await getWeather(lat, lng);
       if (weather && weather !== "Unknown") {
         priority = adjustPriorityByWeather(correction.category, priority, weather);
-        console.log(`🌤️ Weather adjustment: ${weather}`);
+        console.log(` Weather adjustment: ${weather}`);
       }
     } catch (err) {
       console.error("Weather error:", err);
@@ -1074,7 +1314,7 @@ Return ONLY JSON:
       aiImageAnalysis.isIssueVisible === true &&
       aiImageAnalysis.confidence > 85) {
    
-    console.log(`✅ Strong image analysis detected (confidence: ${aiImageAnalysis.confidence}%) → skipping full AI to save cost`);
+    console.log(`Strong image analysis detected (confidence: ${aiImageAnalysis.confidence}%) → skipping full AI to save cost`);
    
     const priority = aiImageAnalysis.severity === "Severe" ? "High" : "Medium";
     const priorityScore = aiImageAnalysis.severity === "Severe" ? 85 : 50;
@@ -1121,7 +1361,7 @@ Return ONLY JSON:
   // STEP 3: FULL AI ANALYSIS (للحالات المعقدة فقط)
   // ============================================================
  
-  console.log(`\n🤖 [STEP 3] Running full AI analysis (complex case)...`);
+  console.log(`\n[STEP 3] Running full AI analysis (complex case)...`);
 
   const imageParts = await processImages(mediaUrls);
  
@@ -1176,7 +1416,7 @@ OUTPUT:
 }`;
 
   const contents = [{ parts: [{ text: prompt }, ...imageParts] }];
-  let aiResponse = await callModel("gemini-1.5-flash", contents, API_KEY);
+  let aiResponse = await callModel("gemini-2.0-flash", contents, API_KEY);
 
   if (!aiResponse) {
     const spamResult = detectSpam({ title, description, category: reportCategory });
@@ -1209,7 +1449,7 @@ OUTPUT:
       aiImageAnalysis.confidence > 85 &&
       finalCategory !== aiImageAnalysis.detectedCategory) {
    
-    console.log(`🔨 FINAL CHECK OVERRIDE: AI said "${finalCategory}" → Corrected to "${aiImageAnalysis.detectedCategory}" based on strong image evidence`);
+    console.log(` FINAL CHECK OVERRIDE: AI said "${finalCategory}" → Corrected to "${aiImageAnalysis.detectedCategory}" based on strong image evidence`);
     finalCategory = aiImageAnalysis.detectedCategory;
     categoryCorrected = true;
     correctionReason = `Image analysis override: ${aiImageAnalysis.visualFindings}`;
@@ -1218,7 +1458,7 @@ OUTPUT:
   // تأكيد نهائي بالكلمات المفتاحية
   const finalKeywordCheck = correctCategoryByKeywords(title, description, reportCategory);
   if (finalKeywordCheck && finalKeywordCheck.category !== finalCategory && finalKeywordCheck.confidence > 90) {
-    console.log(`🔨 FINAL CHECK OVERRIDE: AI said "${finalCategory}" → Corrected to "${finalKeywordCheck.category}" based on keywords`);
+    console.log(` FINAL CHECK OVERRIDE: AI said "${finalCategory}" → Corrected to "${finalKeywordCheck.category}" based on keywords`);
     finalCategory = finalKeywordCheck.category;
     categoryCorrected = true;
     correctionReason = finalKeywordCheck.reason;
@@ -1231,7 +1471,7 @@ OUTPUT:
       const oldPriority = aiResponse.priority;
       aiResponse.priority = adjustPriorityByWeather(finalCategory, aiResponse.priority, weather);
       if (oldPriority !== aiResponse.priority) {
-        console.log(`🌤️ Weather adjustment: ${oldPriority} → ${aiResponse.priority} (${weather})`);
+        console.log(` Weather adjustment: ${oldPriority} → ${aiResponse.priority} (${weather})`);
       }
       aiResponse.weather = weather;
     }
@@ -1241,12 +1481,12 @@ OUTPUT:
 
   const spamResult = detectSpam({ title, description, category: finalCategory });
 
-  console.log(`\n📊 ===== FINAL ANALYSIS RESULT =====`);
-  console.log(`📝 User selected: ${reportCategory || "not specified"}`);
-  console.log(`🖼️ Image analysis: ${aiImageAnalysis?.detectedCategory || "none"}`);
-  console.log(`🤖 Final category: ${finalCategory}`);
-  console.log(`✅ Corrected: ${categoryCorrected ? "YES" : "NO"}`);
-  if (categoryCorrected) console.log(`📌 Reason: ${correctionReason}`);
+  console.log(`\n📊===== FINAL ANALYSIS RESULT =====`);
+  console.log(` User selected: ${reportCategory || "not specified"}`);
+  console.log(` Image analysis: ${aiImageAnalysis?.detectedCategory || "none"}`);
+  console.log(` Final category: ${finalCategory}`);
+  console.log(` Corrected: ${categoryCorrected ? "YES" : "NO"}`);
+  if (categoryCorrected) console.log(` Reason: ${correctionReason}`);
   console.log(`================================\n`);
 
   return {
@@ -1316,7 +1556,7 @@ export function combineAIWithSpam(spamResult, aiResult) {
  
   // إذا تخطى الـ Full AI (توفير تكاليف) لا تؤثر على السكور
   if (aiResult.skippedFullAI) {
-    console.log(`💰 Cost saved: Skipped full AI analysis`);
+    console.log(` Cost saved: Skipped full AI analysis`);
   }
  
   score = Math.max(0, Math.min(100, score));

@@ -6,6 +6,8 @@ import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-lea
 import { useDispatch, useSelector } from "react-redux";
 import { createReport } from "../Features/ReportSlice";
 import * as yup from "yup";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 /* ---------------- VALIDATION ---------------- */
 const reportSchema = yup.object().shape({
@@ -42,6 +44,124 @@ const omanGovernorates = [
   "Musandam", "Al Buraimi",
 ];
 
+// ***Update Neeeew*** دالة مساعدة لتحويل اسم المحافظة من API إلى التسمية المستخدمة في القائمة
+
+// ***Update Neeeew*** دالة محسّنة لتحويل اسم المحافظة (تدعم "Governorate" وغيرها)
+const normalizeGovernorateName = (name) => {
+  if (!name) return "";
+  
+  // تنظيف النص: حروف صغيرة، إزالة التشكيل، إزالة علامات الترقيم
+  let cleanName = name
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u064B-\u0652]/g, "")
+    .replace(/[^\w\s]/g, " ")
+    .replace(/\s+/g, " ");
+  
+  // إزالة كلمة "governorate" إذا وجدت (لأنها تسبب عدم التطابق)
+  cleanName = cleanName.replace(/\bgovernorate\b/g, "").trim();
+  
+  const mapping = {
+    // Muscat
+    "muscat": "Muscat",
+    "masqat": "Muscat",
+    "muḩāfaz̧at masqaţ": "Muscat",
+    "mascat": "Muscat",
+    "مسقط": "Muscat",
+    
+    // Dhofar
+    "dhofar": "Dhofar",
+    "zufar": "Dhofar",
+    "muḩāfaz̧at z̧ufār": "Dhofar",
+    "dhufar": "Dhofar",
+    "ظفار": "Dhofar",
+    
+    // Al Batinah North
+    "al batinah north": "Al Batinah North",
+    "batinah north": "Al Batinah North",
+    "shamal al batinah": "Al Batinah North",
+    "muḩāfaz̧at shamāl al bāţinah": "Al Batinah North",
+    "شمال الباطنة": "Al Batinah North",
+    
+    // Al Batinah South
+    "al batinah south": "Al Batinah South",
+    "batinah south": "Al Batinah South",
+    "janubi al batinah": "Al Batinah South",
+    "muḩāfaz̧at janūbī al bāţinah": "Al Batinah South",
+    "جنوب الباطنة": "Al Batinah South",
+    
+    // Al Dakhiliyah
+    "al dakhiliyah": "Al Dakhiliyah",
+    "dakhiliyah": "Al Dakhiliyah",
+    "muḩāfaz̧at ad dākhilīyah": "Al Dakhiliyah",
+    "الداخلية": "Al Dakhiliyah",
+    
+    // Al Sharqiyah North
+    "al sharqiyah north": "Al Sharqiyah North",
+    "sharqiyah north": "Al Sharqiyah North",
+    "shamal al sharqiyah": "Al Sharqiyah North",
+    "muḩāfaz̧at shamāl ash sharqīyah": "Al Sharqiyah North",
+    "شمال الشرقية": "Al Sharqiyah North",
+    
+    // Al Sharqiyah South
+    "al sharqiyah south": "Al Sharqiyah South",
+    "sharqiyah south": "Al Sharqiyah South",
+    "janubi al sharqiyah": "Al Sharqiyah South",
+    "muḩāfaz̧at janūbī ash sharqīyah": "Al Sharqiyah South",
+    "جنوب الشرقية": "Al Sharqiyah South",
+    
+    // Al Dhahirah
+    "al dhahirah": "Al Dhahirah",
+    "dhahirah": "Al Dhahirah",
+    "az dhahirah": "Al Dhahirah",
+    "muḩāfaz̧at az̧ z̧āhirah": "Al Dhahirah",
+    "الظاهرة": "Al Dhahirah",
+    
+    // Al Wusta
+    "al wusta": "Al Wusta",
+    "wusta": "Al Wusta",
+    "muḩāfaz̧at al wusţá": "Al Wusta",
+    "الوسطى": "Al Wusta",
+    
+    // Musandam
+    "musandam": "Musandam",
+    "muḩāfaz̧at musandam": "Musandam",
+    "مسندم": "Musandam",
+    
+    // Al Buraimi
+    "al buraimi": "Al Buraimi",
+    "buraimi": "Al Buraimi",
+    "muḩāfaz̧at al buraymī": "Al Buraimi",
+    "البريمي": "Al Buraimi",
+  };
+  
+  // البحث المباشر
+  let matched = mapping[cleanName];
+  if (!matched) {
+    // البحث الجزئي (إذا كان النص يحتوي على أي مفتاح)
+    for (const [key, value] of Object.entries(mapping)) {
+      if (cleanName.includes(key) || key.includes(cleanName)) {
+        matched = value;
+        break;
+      }
+    }
+  }
+  
+  // إذا لم يجد، حاول إزالة "governorate" مرة أخرى (للأمان)
+  if (!matched && name.toLowerCase().includes("governorate")) {
+    const withoutGov = name.toLowerCase().replace(/governorate/g, "").trim();
+    return normalizeGovernorateName(withoutGov); // استدعاء ذاتي
+  }
+  
+  console.log(`🔍 Governorate mapping: "${name}" → Clean: "${cleanName}" → Matched: "${matched || name}"`);
+  return matched || name;
+};
+
+
+
+
+
 /* ---------------- TRANSLATION ---------------- */
 const translations = {
   en: {
@@ -57,6 +177,7 @@ const translations = {
       "Street Lighting", "Traffic Signal", "Waste Management",
       "Public Facility Damage", "Other",
     ],
+    descriptionPlaceholder: "Describe the problem in detail (e.g., exact location, severity, impact on public safety)",
     submit: "Submit Report",
   },
 };
@@ -71,7 +192,7 @@ const isWithinOman = (lat, lng) =>
   lng <= OMAN_BOUNDS.maxLng;
 
 /* ---------------- MAP COMPONENT ---------------- */
-function LocationMarker({ setLocation, setCoordinates, setCity, setPosition, onWeatherFetch, setLocationError }) {
+function LocationMarker({ setLocation, setCoordinates, setCity, setPosition, onWeatherFetch, setLocationError, selectedGovernorate, setGovernorateMatchError }) {
   const map = useMap();
 
   useMapEvents({
@@ -105,6 +226,27 @@ function LocationMarker({ setLocation, setCoordinates, setCity, setPosition, onW
       setLocationError("");
       const city = data.address.city || data.address.town || data.address.village || "Unknown";
       setCity(city);
+      
+      // استخراج المحافظة من بيانات API (حقول متعددة)
+      let apiGovernorate = data.address?.state || 
+                           data.address?.county || 
+                           data.address?.region || 
+                           data.address?.state_district || 
+                           data.address?.province ||
+                           "";
+      const normalizedApiGov = normalizeGovernorateName(apiGovernorate);
+      
+      // التحقق من تطابق المحافظة مع المختارة من المستخدم
+      if (selectedGovernorate && normalizedApiGov && normalizedApiGov !== selectedGovernorate) {
+        setGovernorateMatchError(`⚠️ The selected location is in "${normalizedApiGov}", not in "${selectedGovernorate}". Please either change the governorate selection or choose a location within ${selectedGovernorate}.`);
+        setPosition(null);
+        setCoordinates(null);
+        setLocation("");
+        return;
+      } else {
+        setGovernorateMatchError("");
+      }
+      
       if (onWeatherFetch) onWeatherFetch(lat, lng);
     },
   });
@@ -138,6 +280,7 @@ export default function ReportPage({ language = "en" }) {
   const [loading,       setLoading]       = useState(false);
   const [weatherData,   setWeatherData]   = useState(null);
   const [locationError, setLocationError] = useState("");
+  const [governorateMatchError, setGovernorateMatchError] = useState("");
 
   /* -------- FETCH WEATHER -------- */
   const fetchWeatherForLocation = async (lat, lng) => {
@@ -175,6 +318,24 @@ export default function ReportPage({ language = "en" }) {
       const data = await response.json();
       const city = data.address.city || data.address.town || data.address.village || "Unknown";
       setCity(city);
+      
+      let apiGovernorate = data.address?.state || 
+                           data.address?.county || 
+                           data.address?.region || 
+                           data.address?.state_district || 
+                           data.address?.province ||
+                           "";
+      const normalizedApiGov = normalizeGovernorateName(apiGovernorate);
+      if (governorate && normalizedApiGov && normalizedApiGov !== governorate) {
+        setGovernorateMatchError(`⚠️ Your current location is in "${normalizedApiGov}", not in "${governorate}". Please change governorate selection or choose a different location.`);
+        setPosition(null);
+        setCoordinates(null);
+        setLocation("");
+        return;
+      } else {
+        setGovernorateMatchError("");
+      }
+      
       fetchWeatherForLocation(lat, lng);
     });
   };
@@ -229,9 +390,13 @@ export default function ReportPage({ language = "en" }) {
   };
 
   /* -------- SUBMIT -------- */
-  // ✅ FIX 3: تنظيف formatting — navigate داخل try بشكل صحيح
   const handleSubmit = async () => {
     try {
+      if (governorateMatchError) {
+        Swal.fire("Location Mismatch", "Please correct the governorate selection or choose a location that matches the selected governorate.", "warning");
+        return;
+      }
+      
       await reportSchema.validate(
         { title, category, description, location, files, governorate },
         { abortEarly: false }
@@ -266,40 +431,53 @@ export default function ReportPage({ language = "en" }) {
 
       files.forEach((f) => formData.append("media", f));
 
-      const result = await dispatch(createReport(formData)).unwrap();
-
-      setLoading(false);
-
-      navigate("/successPage", {
-        state: {
-          ...result.report,
-          categoryCorrected:  result.categoryCorrected,
-          originalCategory:   result.originalCategory,
-          correctionReason:   result.correctionReason,
-          forcedCorrection:   result.forcedCorrection,
-          userRecommendation: result.userRecommendation,
-          recommendationType: result.recommendationType,
-          weather: {
-            condition:   weatherData?.weather?.[0]?.main        || null,
-            temp:        weatherData?.main?.temp                || null,
-            humidity:    weatherData?.main?.humidity            || null,
-            rain:        weatherData?.rain?.["1h"]              || 0,
-            description: weatherData?.weather?.[0]?.description || null,
-          },
-        },
+      const response = await axios.post("http://localhost:3001/createReport", formData, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-    } catch (error) {
-      console.error("💥 خطأ:", error);
+
       setLoading(false);
+      if (response.data.success) {
+        if (response.data.status === "PendingReview") {
+          Swal.fire("Notice", "Your report is under manual review due to missing details.", "warning");
+        } else {
+          Swal.fire("Submitted", "Thank you for your report.", "success");
+        }
+
+        navigate("/successPage", {
+          state: {
+            ...response.data.report,
+            status: response.data.status,
+            categoryCorrected:  response.data.categoryCorrected,
+            originalCategory:   response.data.originalCategory,
+            correctionReason:   response.data.correctionReason,
+            forcedCorrection:   response.data.forcedCorrection,
+            userRecommendation: response.data.userRecommendation,
+            recommendationType: response.data.recommendationType,
+            weather: {
+              condition:   weatherData?.weather?.[0]?.main        || null,
+              temp:        weatherData?.main?.temp                || null,
+              humidity:    weatherData?.main?.humidity            || null,
+              rain:        weatherData?.rain?.["1h"]              || 0,
+              description: weatherData?.weather?.[0]?.description || null,
+            },
+          },
+        });
+      } else {
+        Swal.fire("Error", response.data.message || "Something went wrong", "error");
+      }
+    } catch (error) {
+      setLoading(false);
+      console.error("Submission error:", error);
 
       if (error.name === "ValidationError") {
         const newErrors = {};
         error.inner.forEach((err) => { newErrors[err.path] = err.message; });
         setErrors(newErrors);
-      } else if (error?.message) {
-        alert("Failed! : " + error.message);
+        Swal.fire("Validation Error", "Please check the form fields", "warning");
+      } else if (error.response?.data?.rejected) {
+        Swal.fire("Rejected", error.response.data.message, "error");
       } else {
-        alert("Failed to submit the Report");
+        Swal.fire("Failed", error.message || "Unable to submit report", "error");
       }
     }
   };
@@ -431,7 +609,20 @@ export default function ReportPage({ language = "en" }) {
           {/* Governorate */}
           <div className="mb-3">
             <label className="form-label fw-semibold">Governorate (Oman)</label>
-            <select className="form-select" value={governorate} onChange={(e) => setGovernorate(e.target.value)}>
+            <select
+              className="form-select"
+              value={governorate}
+              onChange={(e) => {
+                setGovernorate(e.target.value);
+                setGovernorateMatchError("");
+                setLocationError("");
+                // *** مهم: مسح الموقع المحدد عند تغيير المحافظة ***
+                setPosition(null);
+                setCoordinates(null);
+                setLocation("");
+                setCity("");
+              }}
+            >
               <option value="">Select Governorate</option>
               {omanGovernorates.map((gov) => <option key={gov}>{gov}</option>)}
             </select>
@@ -478,12 +669,15 @@ export default function ReportPage({ language = "en" }) {
                 setPosition={setPosition}
                 onWeatherFetch={fetchWeatherForLocation}
                 setLocationError={setLocationError}
+                selectedGovernorate={governorate}
+                setGovernorateMatchError={setGovernorateMatchError}
               />
               {position && <Marker position={position} />}
             </MapContainer>
           </div>
 
           {locationError && <p className="text-danger mt-2">⚠️ {locationError}</p>}
+          {governorateMatchError && <p className="text-danger mt-2">⚠️ {governorateMatchError}</p>}
           {city && <p className="text-success mt-2">Selected City: {city}</p>}
 
           {/* Weather Indicator */}

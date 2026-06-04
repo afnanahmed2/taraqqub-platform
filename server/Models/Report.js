@@ -91,6 +91,7 @@ const reportSchema = new mongoose.Schema(
       default: null,
     },
 
+    // ***Update Neeeew*** إضافة New و PendingReview إلى قيم الحالة المسموحة
     status: {
       type:    String,
       enum:    ["pending", "in-progress", "resolved", "spam", "rejected"],
@@ -119,7 +120,7 @@ const reportSchema = new mongoose.Schema(
       default: false,
     },
 
-    // ✅ FIX 2: حذف null من enum، والاعتماد على default: null فقط
+    // ***Update Neeeew*** إضافة null إلى enum لحل مشكلة التحقق
     originalCategory: {
       type: String,
       enum: [
@@ -150,6 +151,19 @@ const reportSchema = new mongoose.Schema(
     aiAnalysis: {
       type:    mongoose.Schema.Types.Mixed,
       default: {},
+    },
+
+    // ***Update Neeeew*** إضافة حقل درجة السبام وسبب الرفض (إن وجد)
+    spamScore: {
+      type:    Number,
+      min:     0,
+      max:     100,
+      default: 0,
+    },
+
+    spamReasons: {
+      type:    [String],
+      default: [],
     },
   },
   { timestamps: true }
