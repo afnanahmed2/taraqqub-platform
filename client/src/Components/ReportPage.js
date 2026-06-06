@@ -431,7 +431,7 @@ export default function ReportPage({ language = "en" }) {
 
       files.forEach((f) => formData.append("media", f));
 
-      const response = await axios.post("http://localhost:3001/createReport", formData, {
+      const response = await axios.post(`${process.env.REACT_APP_SERVER_URL}/createReport`, formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
